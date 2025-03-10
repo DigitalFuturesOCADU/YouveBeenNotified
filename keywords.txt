@@ -1,0 +1,62 @@
+#######################################
+# Syntax Coloring Map for YouveBeenNotified
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+BaseNotifier	KEYWORD1
+ServoNotifier	KEYWORD1
+KeyframeAnimation	KEYWORD1
+LEDNotifier	KEYWORD1
+RGBLEDNotifier	KEYWORD1
+RGBKeyframeAnimation	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+addAnimation	KEYWORD2
+playAnimation	KEYWORD2
+crossfadeTo	KEYWORD2
+pause	KEYWORD2
+resume	KEYWORD2
+stop	KEYWORD2
+update	KEYWORD2
+getValue	KEYWORD2
+setGlobalSpeed	KEYWORD2
+getGlobalSpeed	KEYWORD2
+setValueScale	KEYWORD2
+setValueOffset	KEYWORD2
+setValueRange	KEYWORD2
+addKeyFrame	KEYWORD2
+setKeyFrameValue	KEYWORD2
+setKeyFrameTime	KEYWORD2
+setColor	KEYWORD2
+getColor	KEYWORD2
+getRGB	KEYWORD2
+getRed	KEYWORD2
+getGreen	KEYWORD2
+getBlue	KEYWORD2
+setPixelColor	KEYWORD2
+setMode	KEYWORD2
+setThreshold	KEYWORD2
+begin	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+PLAY_ONCE	LITERAL1
+PLAY_LOOP	LITERAL1
+PLAY_BOOMERANG	LITERAL1
+ONCE	LITERAL1
+LOOP	LITERAL1
+BOOMERANG	LITERAL1
+IDLE	LITERAL1
+PLAYING	LITERAL1
+PAUSED	LITERAL1
+COMPLETED	LITERAL1
+ANALOG	LITERAL1
+DIGITAL	LITERAL1
