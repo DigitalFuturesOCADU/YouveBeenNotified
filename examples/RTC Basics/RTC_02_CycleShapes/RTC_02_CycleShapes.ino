@@ -7,7 +7,7 @@
  * 
  * Key Functions:
  * - minuteUpdate(): Changes the displayed shape and prints status messages
- * - showTimeDebug(): Displays current second count and shape index
+ * - showTimeDebug(): Displays current second count
  * - displayShape(): Draws the current shape on the LED matrix
  * 
  * Key Variables:
@@ -15,13 +15,8 @@
  * - lastMinute: Stores the last minute value to detect changes
  * - lastSecond: Stores the last second value to detect changes
  * 
- * Comparison with other methods:
- * - Alarm Method: Most precise timing for specific clock values. Triggers exactly 
- *   at the beginning of each minute with minimal code. Good for exact timing requirements.
- * - Time Polling Method (this): Continuously checks time, which uses more CPU but is flexible 
- *   for detecting various time patterns. Works even if RTC doesn't support alarms.
- * - Periodic Callback Method: Uses a counter approach with regular interrupts. Good for 
- *   custom intervals that don't align with clock values, but may drift over time.
+ * Drawing to the Matrix
+ * See this guide for drawing things to the matrix : https://github.com/DigitalFuturesOCADU/YouveBeenNotified/blob/main/ArduinoGraphics_R4.md
  */
 
 // Include the required libraries
@@ -39,7 +34,10 @@ int lastSecond = -1;       // holds the previous time value
 
 // Variables for shape state and timing
 int shapeIndex = 0;        // Track which shape to display
+int currentMinute;         // stores the current minute from the RTC
+int currentSecond;         // stores the current second from the RTC
 int lastMinute = -1;       // Used to detect minute changes
+int updateInterval = 1;    // Minutes between shape updates (can be changed)
 
 void setup() 
 {
@@ -56,7 +54,7 @@ void setup()
   RTC.begin();
 
   // Set initial time
-  RTCTime initialTime(14, Month::MARCH, 2025, 0, 0, 0, DayOfWeek::FRIDAY, SaveLight::SAVING_TIME_ACTIVE);
+  RTCTime initialTime(04, Month::APRIL, 2025, 10, 0, 0, DayOfWeek::FRIDAY, SaveLight::SAVING_TIME_ACTIVE);
   RTC.setTime(initialTime);
 
   Serial.println("RTC Minute Trigger with LED Matrix Shapes Example");
@@ -73,7 +71,8 @@ void loop()
   RTC.getTime(currentTime);
   
   // Current values
-  int currentMinute = currentTime.getMinutes();
+  currentMinute = currentTime.getMinutes();
+  currentSecond = currentTime.getSeconds();
   
   // Check if minute has changed
   if (currentMinute != lastMinute) 
@@ -81,8 +80,12 @@ void loop()
     // Update the stored minute
     lastMinute = currentMinute;
     
-    // Trigger the minute update
-    minuteUpdate();
+    // Trigger the minute update only if we've reached a multiple of updateInterval
+    // The default is every minute, but it can be changed with the variable
+    // https://docs.arduino.cc/language-reference/en/structure/arithmetic-operators/remainder/
+    if (currentMinute % updateInterval == 0) {
+      minuteUpdate();
+    }
   }
   
   if(showDebug)
@@ -94,14 +97,6 @@ void loop()
 // Prints out current minute/second values
 void showTimeDebug()
 {
-  // Get current time
-  RTCTime currentTime;
-  RTC.getTime(currentTime);
-  
-  // Current values
-  int currentMinute = currentTime.getMinutes();
-  int currentSecond = currentTime.getSeconds();
-
   // Check if second has changed
   if (currentSecond != lastSecond)
   {
@@ -125,15 +120,11 @@ void minuteUpdate()
   // Display the new shape
   displayShape();
   
-  // Get current time for display
-  RTCTime currentTime;
-  RTC.getTime(currentTime);
-  
   // Print update message
   Serial.println("---------------------");
   Serial.println("MINUTE UPDATE");
   Serial.print("Current Minute: ");
-  Serial.println(currentTime.getMinutes());
+  Serial.println(currentMinute);
   Serial.print("Current Shape: ");
   Serial.println(shapeIndex);
   Serial.println("---------------------");
@@ -181,11 +172,11 @@ void displayShape()
   }
   
   // Add the shape number as text
-  matrix.textFont(Font_4x6); // Use the smaller font
-  matrix.stroke(0xFFFFFFFF); // Ensure text is visible
+  //matrix.textFont(Font_4x6); // Use the smaller font
+  //matrix.stroke(0xFFFFFFFF); // Ensure text is visible
   
   // Display the shape number in the corner
-  matrix.text(String(shapeIndex), 0, 0);
+  //matrix.text(String(shapeIndex), 0, 0);
   
   matrix.endDraw();
 }
