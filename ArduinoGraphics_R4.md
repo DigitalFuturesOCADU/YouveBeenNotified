@@ -2,51 +2,56 @@
 
 ## Table of Contents
 - [Setup](#setup)
-- [Methods](#methods)
+- [Matrix Methods](#matrix-methods)
   - [begin()](#begin)
   - [end()](#end)
   - [width()](#width)
   - [height()](#height)
+- [Drawing Control Methods](#drawing-control-methods)
   - [beginDraw()](#begindraw)
   - [endDraw()](#enddraw)
+  - [background()](#background)
   - [clear()](#clear)
+  - [set()](#set)
+- [Style Control Methods](#style-control-methods)
   - [fill()](#fill)
   - [noFill()](#nofill)
   - [stroke()](#stroke)
   - [noStroke()](#nostroke)
-  - [line()](#line)
+- [Shape Drawing Methods](#shape-drawing-methods)
   - [point()](#point)
+  - [line()](#line)
   - [rect()](#rect)
   - [circle()](#circle)
   - [ellipse()](#ellipse)
+- [Text Methods](#text-methods)
   - [text()](#text)
   - [textFont()](#textfont)
   - [textFontWidth()](#textfontwidth)
   - [textFontHeight()](#textfontheight)
-  - [set()](#set)
   - [beginText()](#begintext)
+  - [print(), println()](#print-println)
   - [endText()](#endtext)
   - [textScrollSpeed()](#textscrollspeed)
-- [Inverted Drawing Methods](#inverted-drawing-methods)
-  - [Inverted Display Setup](#inverted-display-setup)
-  - [Inverted Drawing](#inverted-drawing)
-  - [Inverted Shapes](#inverted-shapes)
-  - [Inverted Canvas Clearing](#inverted-canvas-clearing)
-  - [Complete Inverted Drawing Example](#complete-inverted-drawing-example)
-- [Complete Example](#complete-example)
+- [Example Sketches](#example-sketches)
+  - [Scrolling Text](#scrolling-text)
+  - [Drawing Shapes](#drawing-shapes)
+  - [Sine Wave Animation](#sine-wave-animation)
 
 This documentation covers the Arduino Graphics Library as used with the Arduino R4 WiFi's built-in 12×8 single-color LED matrix.
 
 ## Setup
 
 ```cpp
-#include "Arduino_LED_Matrix.h"
+// Include ArduinoGraphics BEFORE Arduino_LED_Matrix
 #include "ArduinoGraphics.h"
+#include "Arduino_LED_Matrix.h"
 
+// Create the matrix instance
 ArduinoLEDMatrix matrix;
 ```
 
-## Methods
+## Matrix Methods
 
 ### `begin()`
 
@@ -66,7 +71,7 @@ None
 
 #### Returns
 
-1 for success, 0 on failure.
+Boolean: true for success, false on failure.
 
 #### Example
 
@@ -155,6 +160,8 @@ Returns 8 (the height of the R4 WiFi LED matrix).
 int h = matrix.height(); // h will be 8
 ```
 
+## Drawing Control Methods
+
 ### `beginDraw()`
 
 #### Description
@@ -179,7 +186,7 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.set(0, 0, 1); // Turn on LED at position 0,0
+matrix.point(0, 0); // Draw a point at position 0,0
 matrix.endDraw();
 ```
 
@@ -207,15 +214,47 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.set(5, 3, 1); // Turn on LED at position 5,3
+matrix.point(5, 3); // Draw a point at position 5,3
 matrix.endDraw();
+```
+
+### `background()`
+
+#### Description
+
+Set the background color. For the single color matrix, this determines if background pixels are on or off.
+
+#### Syntax
+
+```cpp
+matrix.background(r, g, b)
+matrix.background(hexColor)
+```
+
+#### Parameters
+
+- r, g, b: Color values (0-255). For the single-color matrix, use 0 for off, 255 for on.
+- hexColor: 24-bit RGB color in hexadecimal format (0xRRGGBB or 0xFFFFFF for white)
+
+#### Returns
+
+Nothing
+
+#### Example
+
+```cpp
+// Set the background to "off"
+matrix.background(0, 0, 0);
+
+// Set the background to "on" (using hex color)
+matrix.background(0xFFFFFF);
 ```
 
 ### `clear()`
 
 #### Description
 
-Clears the LED matrix (turns all LEDs off).
+Clears the LED matrix (sets all LEDs to the background state).
 
 #### Syntax
 
@@ -243,9 +282,46 @@ matrix.endDraw();
 
 // Clear just one pixel
 matrix.beginDraw();
-matrix.clear(2, 3); // Turn off LED at position 2,3
+matrix.clear(2, 3); // Reset LED at position 2,3 to background state
 matrix.endDraw();
 ```
+
+### `set()`
+
+#### Description
+
+Sets the state of a specific LED directly.
+
+#### Syntax
+
+```cpp
+matrix.set(x, y, r, g, b)
+matrix.set(x, y, hexColor)
+```
+
+#### Parameters
+
+- x: x position of the pixel (0-11)
+- y: y position of the pixel (0-7)
+- r, g, b: Color values (0-255). For the single-color matrix, use 0 for off, 255 for on.
+- hexColor: 24-bit RGB color in hexadecimal format (0xRRGGBB or 0xFFFFFF for white)
+
+#### Returns
+
+Nothing
+
+#### Example
+
+```cpp
+matrix.beginDraw();
+// Turn on LED at position 3,2 (using RGB)
+matrix.set(3, 2, 255, 255, 255);
+// Turn on LED at position 4,2 (using hex)
+matrix.set(4, 2, 0xFFFFFF);
+matrix.endDraw();
+```
+
+## Style Control Methods
 
 ### `fill()`
 
@@ -256,12 +332,14 @@ Sets the fill state for drawing operations (on/off).
 #### Syntax
 
 ```cpp
-matrix.fill(state)
+matrix.fill(r, g, b)
+matrix.fill(hexColor)
 ```
 
 #### Parameters
 
-- state: 1 for on, 0 for off
+- r, g, b: Color values (0-255). For the single-color matrix, use 0 for off, 255 for on.
+- hexColor: 24-bit RGB color in hexadecimal format (0xRRGGBB or 0xFFFFFF for white)
 
 #### Returns
 
@@ -271,8 +349,8 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.clear();
-matrix.fill(1); // Set fill to "on"
+// Set fill to "on" using hex color
+matrix.fill(0xFFFFFF);
 matrix.rect(2, 2, 8, 4); // Draw a filled rectangle
 matrix.endDraw();
 ```
@@ -301,8 +379,7 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.clear();
-matrix.stroke(1); // Set stroke to "on"
+matrix.stroke(0xFFFFFF); // Set stroke to "on"
 matrix.noFill(); // Disable filling
 matrix.rect(2, 2, 8, 4); // Draw rectangle outline only
 matrix.endDraw();
@@ -317,12 +394,14 @@ Sets the stroke state for drawing operations (on/off).
 #### Syntax
 
 ```cpp
-matrix.stroke(state)
+matrix.stroke(r, g, b)
+matrix.stroke(hexColor)
 ```
 
 #### Parameters
 
-- state: 1 for on, 0 for off
+- r, g, b: Color values (0-255). For the single-color matrix, use 0 for off, 255 for on.
+- hexColor: 24-bit RGB color in hexadecimal format (0xRRGGBB or 0xFFFFFFFF for white)
 
 #### Returns
 
@@ -332,8 +411,8 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.clear();
-matrix.stroke(1); // Set stroke to "on"
+// Set stroke to "on" using hex color
+matrix.stroke(0xFFFFFFFF);
 matrix.noFill();
 matrix.rect(1, 1, 10, 6); // Draw rectangle outline
 matrix.endDraw();
@@ -363,10 +442,41 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.clear();
 matrix.noStroke(); // Disable stroke
-matrix.fill(1); // Set fill to "on"
+matrix.fill(0xFFFFFF); // Set fill to "on"
 matrix.rect(3, 2, 6, 4); // Draw filled rectangle with no outline
+matrix.endDraw();
+```
+
+## Shape Drawing Methods
+
+### `point()`
+
+#### Description
+
+Draws a single point (turns on a single LED).
+
+#### Syntax
+
+```cpp
+matrix.point(x, y)
+```
+
+#### Parameters
+
+- x: x position of the point (0-11)
+- y: y position of the point (0-7)
+
+#### Returns
+
+Nothing
+
+#### Example
+
+```cpp
+matrix.beginDraw();
+matrix.stroke(0xFFFFFF); // Set the point color to "on"
+matrix.point(6, 4); // Turn on the LED at position 6,4
 matrix.endDraw();
 ```
 
@@ -397,39 +507,8 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.clear();
-matrix.stroke(1); // Set stroke to "on"
+matrix.stroke(0xFFFFFFFF); // Set stroke to "on"
 matrix.line(0, 0, 11, 7); // Draw diagonal line across matrix
-matrix.endDraw();
-```
-
-### `point()`
-
-#### Description
-
-Draws a single point (turns on a single LED).
-
-#### Syntax
-
-```cpp
-matrix.point(x, y)
-```
-
-#### Parameters
-
-- x: x position of the point (0-11)
-- y: y position of the point (0-7)
-
-#### Returns
-
-Nothing
-
-#### Example
-
-```cpp
-matrix.beginDraw();
-matrix.clear();
-matrix.point(6, 4); // Turn on the LED at position 6,4
 matrix.endDraw();
 ```
 
@@ -460,8 +539,7 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.clear();
-matrix.stroke(1); // Set stroke to "on"
+matrix.stroke(0xFFFFFFFF); // Set stroke to "on"
 matrix.noFill();
 matrix.rect(2, 1, 8, 6); // Draw rectangle outline
 matrix.endDraw();
@@ -493,9 +571,8 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.clear();
-matrix.stroke(1); // Set stroke to "on"
-matrix.fill(1); // Set fill to "on"
+matrix.stroke(0xFFFFFFFF); // Set stroke to "on"
+matrix.fill(0xFFFFFFFF); // Set fill to "on"
 matrix.circle(5, 3, 5); // Draw a circle in the center of matrix
 matrix.endDraw();
 ```
@@ -527,12 +604,13 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.clear();
-matrix.stroke(1); // Set stroke to "on"
-matrix.fill(0); // No fill
+matrix.stroke(0xFFFFFFFF); // Set stroke to "on"
+matrix.noFill();
 matrix.ellipse(5, 3, 8, 4); // Draw an ellipse outline
 matrix.endDraw();
 ```
+
+## Text Methods
 
 ### `text()`
 
@@ -561,7 +639,7 @@ Nothing
 
 ```cpp
 matrix.beginDraw();
-matrix.clear();
+matrix.stroke(0xFFFFFFFF); // Set text color to "on"
 matrix.text("Hi", 0, 1); // Display "Hi" starting at position 0,1
 matrix.endDraw();
 ```
@@ -570,7 +648,7 @@ matrix.endDraw();
 
 #### Description
 
-Sets the font used for text. The library includes Font_4x6 and Font_5x7 built in, but Font_4x6 is recommended for the 12x8 matrix.
+Sets the font used for text. The library includes Font_4x6 and Font_5x7 built in.
 
 #### Syntax
 
@@ -580,7 +658,7 @@ matrix.textFont(font)
 
 #### Parameters
 
-- font: font to set (typically Font_4x6 for the R4 WiFi matrix)
+- font: font to set (Font_4x6 or Font_5x7)
 
 #### Returns
 
@@ -589,10 +667,9 @@ Nothing
 #### Example
 
 ```cpp
-#include "Font_4x6.h"
-
+// ArduinoGraphics.h already includes Font_4x6 and Font_5x7
 matrix.beginDraw();
-matrix.clear();
+matrix.stroke(0xFFFFFFFF); // Set text color to "on"
 matrix.textFont(Font_4x6);
 matrix.text("Hi", 0, 1);
 matrix.endDraw();
@@ -621,6 +698,7 @@ Width of the font in pixels
 #### Example
 
 ```cpp
+matrix.textFont(Font_4x6);
 int w = matrix.textFontWidth(); // Will be 4 for Font_4x6
 ```
 
@@ -647,40 +725,8 @@ Height of the font in pixels
 #### Example
 
 ```cpp
+matrix.textFont(Font_4x6);
 int h = matrix.textFontHeight(); // Will be 6 for Font_4x6
-```
-
-### `set()`
-
-#### Description
-
-Turns a specific LED on or off.
-
-#### Syntax
-
-```cpp
-matrix.set(x, y, state)
-```
-
-#### Parameters
-
-- x: x position of the pixel (0-11)
-- y: y position of the pixel (0-7)
-- state: 1 for on, 0 for off
-
-#### Returns
-
-Nothing
-
-#### Example
-
-```cpp
-matrix.beginDraw();
-matrix.clear();
-matrix.set(3, 2, 1); // Turn on LED at position 3,2
-matrix.set(4, 2, 1); // Turn on LED at position 4,2
-matrix.set(5, 2, 1); // Turn on LED at position 5,2
-matrix.endDraw();
 ```
 
 ### `beginText()`
@@ -694,12 +740,14 @@ Start the process of displaying and optionally scrolling text.
 ```cpp
 matrix.beginText()
 matrix.beginText(x, y)
+matrix.beginText(x, y, hexColor)
 ```
 
 #### Parameters
 
 - x: x position of the text
 - y: y position of the text
+- hexColor: 24-bit RGB color in hexadecimal format (0xRRGGBB or 0xFFFFFF for white)
 
 #### Returns
 
@@ -710,6 +758,35 @@ Nothing
 ```cpp
 matrix.beginText(0, 0);
 matrix.print("Hi");
+matrix.endText();
+```
+
+### `print(), println()`
+
+#### Description
+
+Adds text to be displayed after beginText() is called. Similar to Serial.print() and Serial.println().
+
+#### Syntax
+
+```cpp
+matrix.print(text)
+matrix.println(text)
+```
+
+#### Parameters
+
+- text: Text to display or scroll
+
+#### Returns
+
+Nothing
+
+#### Example
+
+```cpp
+matrix.beginText(0, 1);
+matrix.print("Hello");
 matrix.endText();
 ```
 
@@ -728,7 +805,7 @@ matrix.endText(scrollDirection)
 
 #### Parameters
 
-- scrollDirection: (optional) the direction to scroll, defaults to NO_SCROLL if not provided. Valid options are NO_SCROLL, SCROLL_LEFT, SCROLL_RIGHT, SCROLL_UP, SCROLL_DOWN
+- scrollDirection: (optional) the direction to scroll. Valid options are NO_SCROLL, SCROLL_LEFT, SCROLL_RIGHT, SCROLL_UP, SCROLL_DOWN
 
 #### Returns
 
@@ -772,224 +849,181 @@ matrix.print("Arduino R4!");
 matrix.endText(SCROLL_LEFT);
 ```
 
-## Inverted Drawing Methods
+## Example Sketches
 
-The standard drawing approach turns on specific LEDs against a dark background. Inverted drawing does the opposite - all LEDs are turned on by default, and your shapes or text appear by turning specific LEDs off.
-
-### Inverted Display Setup
-
-#### Description
-
-Initializes the matrix with all LEDs turned on (inverted display).
-
-#### Example
+### Scrolling Text
 
 ```cpp
-void setupInvertedDisplay() {
-  matrix.beginDraw();
-  // Turn on all LEDs
-  for (int x = 0; x < matrix.width(); x++) {
-    for (int y = 0; y < matrix.height(); y++) {
-      matrix.set(x, y, 1);
-    }
-  }
-  matrix.endDraw();
-}
-```
-
-### Inverted Drawing
-
-#### Description
-
-When drawing in inverted mode, you'll use the standard drawing functions but set the stroke and fill to 0 (off) instead of 1 (on).
-
-#### Example - Inverted Text
-
-```cpp
-void drawInvertedText(const char* text, int x, int y) {
-  // Save current state
-  matrix.beginDraw();
-  
-  // Set the "off" state for drawing text
-  // In inverted mode, we "erase" pixels to show text
-  matrix.stroke(0);
-  
-  // Draw the text - it will appear as "off" pixels
-  matrix.text(text, x, y);
-  
-  matrix.endDraw();
-}
-```
-
-### Inverted Shapes
-
-#### Description
-
-Draw shapes by turning off LEDs against an illuminated background.
-
-#### Example - Inverted Rectangle
-
-```cpp
-void drawInvertedRect(int x, int y, int width, int height) {
-  matrix.beginDraw();
-  
-  // Fill and stroke with "off" pixels
-  matrix.stroke(0);
-  matrix.fill(0);
-  
-  // Draw a rectangle - it will appear as "off" pixels
-  matrix.rect(x, y, width, height);
-  
-  matrix.endDraw();
-}
-```
-
-### Inverted Canvas Clearing
-
-#### Description
-
-Resets the display to the inverted state (all LEDs on).
-
-#### Example
-
-```cpp
-void clearInverted() {
-  matrix.beginDraw();
-  
-  // Turn all LEDs on
-  for (int x = 0; x < matrix.width(); x++) {
-    for (int y = 0; y < matrix.height(); y++) {
-      matrix.set(x, y, 1);
-    }
-  }
-  
-  matrix.endDraw();
-}
-```
-
-### Complete Inverted Drawing Example
-
-```cpp
-#include "Arduino_LED_Matrix.h"
+// Text Animation Example
+// Include ArduinoGraphics BEFORE Arduino_LED_Matrix
 #include "ArduinoGraphics.h"
-#include "Font_4x6.h"
+#include "Arduino_LED_Matrix.h"
 
+// Create the matrix instance
 ArduinoLEDMatrix matrix;
 
 void setup() {
-  Serial.begin(9600);
-  
-  // Initialize the matrix
-  if (!matrix.begin()) {
-    Serial.println("Failed to initialize the matrix!");
-    while (1);
-  }
-  
-  // Set up inverted display (all LEDs on)
-  invertedSetup();
-  
-  // Draw inverted smiley face
-  drawInvertedSmiley();
-  
-  delay(2000);
-  
-  // Reset to inverted state
-  invertedSetup();
-  
-  // Show inverted scrolling text
-  matrix.beginText(0, 1);
+  // Initialize the LED matrix
+  matrix.begin();
+
+  // Display static text first
+  matrix.beginDraw();
+  matrix.stroke(0xFFFFFFFF);
   matrix.textFont(Font_4x6);
-  matrix.stroke(0); // Text appears by turning LEDs off
-  matrix.textScrollSpeed(150);
-  matrix.print("Inverted!");
-  matrix.endText(SCROLL_LEFT);
-}
-
-void invertedSetup() {
-  matrix.beginDraw();
-  // Turn all LEDs on
-  for (int x = 0; x < matrix.width(); x++) {
-    for (int y = 0; y < matrix.height(); y++) {
-      matrix.set(x, y, 1);
-    }
-  }
+  matrix.text("Hi!", 1, 1);
   matrix.endDraw();
-}
-
-void drawInvertedSmiley() {
-  matrix.beginDraw();
   
-  // Eyes - turn these LEDs off
-  matrix.set(3, 2, 0);
-  matrix.set(8, 2, 0);
-  
-  // Mouth - turn these LEDs off
-  matrix.set(2, 5, 0);
-  matrix.set(3, 6, 0);
-  matrix.set(4, 6, 0);
-  matrix.set(5, 6, 0);
-  matrix.set(6, 6, 0);
-  matrix.set(7, 6, 0);
-  matrix.set(8, 6, 0);
-  matrix.set(9, 5, 0);
-  
-  matrix.endDraw();
+  delay(2000); // Display static text for 2 seconds
 }
 
 void loop() {
-  // Matrix will continue to scroll inverted text
+  // Make scrolling text
+  matrix.beginDraw();
+  
+  // Set text color (using hex code)
+  matrix.stroke(0xFFFFFFFF);
+  
+  // Set scrolling speed (milliseconds between updates)
+  matrix.textScrollSpeed(100);
+  
+  // Add the scrolling text
+  matrix.textFont(Font_4x6); // Smaller font fits better
+  matrix.beginText(0, 1, 0xFFFFFF);
+  matrix.print("  Hello Arduino R4!  ");
+  matrix.endText(SCROLL_LEFT);
+  
+  matrix.endDraw();
 }
 ```
 
-## Complete Example
+### Drawing Shapes
 
 ```cpp
-#include "Arduino_LED_Matrix.h"
+// Drawing Shapes Example
+// Include ArduinoGraphics BEFORE Arduino_LED_Matrix
 #include "ArduinoGraphics.h"
-#include "Font_4x6.h"
+#include "Arduino_LED_Matrix.h"
 
+// Create the matrix instance
 ArduinoLEDMatrix matrix;
 
 void setup() {
-  Serial.begin(9600);
+  // Initialize the LED matrix
+  matrix.begin();
+}
+
+void loop() {
+  // Draw a rectangle
+  matrix.beginDraw();
+  matrix.clear();
+  matrix.stroke(0xFFFFFFFF); // White outline
+  matrix.noFill();
+  matrix.rect(1, 1, 10, 6);
+  matrix.endDraw();
+  delay(1000);
   
-  // Initialize the LED Matrix
-  if (!matrix.begin()) {
-    Serial.println("Failed to initialize the matrix!");
-    while (1);
+  // Draw a filled rectangle
+  matrix.beginDraw();
+  matrix.clear();
+  matrix.stroke(0xFFFFFFFF);
+  matrix.fill(0xFFFFFFFF);
+  matrix.rect(2, 2, 8, 4);
+  matrix.endDraw();
+  delay(1000);
+  
+  // Draw a circle
+  matrix.beginDraw();
+  matrix.clear();
+  matrix.stroke(0xFFFFFFFF);
+  matrix.noFill();
+  matrix.circle(6, 4, 6);
+  matrix.endDraw();
+  delay(1000);
+  
+  // Draw a filled circle
+  matrix.beginDraw();
+  matrix.clear();
+  matrix.stroke(0xFFFFFFFF);
+  matrix.fill(0xFFFFFFFF);
+  matrix.circle(6, 4, 4);
+  matrix.endDraw();
+  delay(1000);
+  
+  // Draw lines
+  matrix.beginDraw();
+  matrix.clear();
+  matrix.stroke(0xFFFFFFFF);
+  matrix.line(0, 0, 11, 7); // Diagonal line
+  matrix.line(0, 7, 11, 0); // Crossed diagonal
+  matrix.endDraw();
+  delay(1000);
+  
+  // Draw points pattern
+  matrix.beginDraw();
+  matrix.clear();
+  matrix.stroke(0xFFFFFFFF);
+  for (int x = 1; x < 11; x += 2) {
+    for (int y = 1; y < 7; y += 2) {
+      matrix.point(x, y);
+    }
   }
-  
-  // Draw a smiley face
+  matrix.endDraw();
+  delay(1000);
+}
+```
+
+### Sine Wave Animation
+
+```cpp
+// Sine Wave Animation Example
+// Include ArduinoGraphics BEFORE Arduino_LED_Matrix
+#include "ArduinoGraphics.h"
+#include "Arduino_LED_Matrix.h"
+
+// Create the matrix instance
+ArduinoLEDMatrix matrix;
+
+// Variables for sine wave animation
+float phase = 0.0;
+const float phaseIncrement = 0.2; // How fast the wave moves
+
+void setup() {
+  // Initialize the LED matrix
+  matrix.begin();
+}
+
+void loop() {
+  // Clear the display
   matrix.beginDraw();
   matrix.clear();
   
-  // Eyes
-  matrix.set(3, 2, 1);
-  matrix.set(8, 2, 1);
+  // Set the drawing color
+  matrix.stroke(0xFFFFFFFF);
   
-  // Mouth
-  matrix.set(2, 5, 1);
-  matrix.set(3, 6, 1);
-  matrix.set(4, 6, 1);
-  matrix.set(5, 6, 1);
-  matrix.set(6, 6, 1);
-  matrix.set(7, 6, 1);
-  matrix.set(8, 6, 1);
-  matrix.set(9, 5, 1);
+  // Draw the sine wave
+  for (int x = 0; x < 12; x++) {
+    // Calculate y position using sine function
+    // Map sine output (-1 to 1) to LED matrix coordinates
+    float sinValue = sin(x * 0.5 + phase);
+    int y = (int)(3.5 + 3.0 * sinValue); // Center at y=3.5, amplitude = 3
+    
+    // Make sure y stays within bounds of display (0-7)
+    y = constrain(y, 0, 7);
+    
+    // Draw the point
+    matrix.point(x, y);
+  }
   
+  // Update the phase for animation
+  phase += phaseIncrement;
+  if (phase > 2 * PI) {
+    phase -= 2 * PI; // Keep phase within reasonable range
+  }
+  
+  // Show the frame
   matrix.endDraw();
   
-  delay(2000);
-  
-  // Scrolling text
-  matrix.beginText(0, 1);
-  matrix.textFont(Font_4x6);
-  matrix.textScrollSpeed(150);
-  matrix.print("Arduino R4 WiFi!");
-  matrix.endText(SCROLL_LEFT);
-}
-
-void loop() {
-  // Matrix will continue to scroll text
+  // Control animation speed
+  delay(100);
 }
 ```
