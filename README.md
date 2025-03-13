@@ -1,6 +1,19 @@
 # You've Been Notified
-![You've Been Notified](images/ybn_mainImage.jpg)
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Real Time Clock (RTC) on Arduino R4 WiFi](#real-time-clock-rtc-on-arduino-r4-wifi)
+  - [Guide to Arduino R4 Wifi RTC](#guide-to-arduino-r4-wifi-rtc)
+  - [Key RTC Data Types](#key-rtc-data-types)
+  - [Essential RTC Methods](#essential-rtc-methods)
+  - [Combining RTC with Animation Timing](#combining-rtc-with-animation-timing)
+  - [RTC Example Projects Overview](#rtc-example-projects-overview)
+  - [Choosing the Right Timing Method](#choosing-the-right-timing-method)
+- [Notifier Objects for Animating Servos / LEDs Featur](#notifier-objects-for-animating-servos--leds-featur)
+  - [Core Components](#core-components)
+  - [Basic Usage](#basic-usage)
+  - [Advanced Features](#advanced-features)
 
 ## Overview
 
