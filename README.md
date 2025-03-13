@@ -1,10 +1,20 @@
-# Arduino R4 WiFi Time-Based Animations
+# You've Been Notified
+![You've Been Notified](images/ybn_mainImage.jpg)
 
-This project combines the Arduino R4 WiFi's built-in Real Time Clock (RTC) with the YouveBeenNotified animation library to create time-controlled animations for the LED matrix display.
+
+## Overview
+
+This library introduces methods and examples for Project 3 that will assist in : 
+- Reading / Using information from the Real Time Clock
+- Controlling Servos and other actuators as outputs
+- Drawing the the LED Matrix for Debugging
 
 ## Real Time Clock (RTC) on Arduino R4 WiFi
 
 The Arduino R4 WiFi features a built-in Real Time Clock (RTC) that allows your projects to track time even when disconnected from the internet. When working with time-based projects that need to run for extended periods (like our 1-hour requirement), the RTC provides reliable timing for triggering animations.
+
+### Guide to Arduino R4 Wifi RTC
+You can find a full overview of the RTC on the Arduino [here](https://docs.arduino.cc/tutorials/uno-r4-wifi/rtc/).
 
 ### Key RTC Data Types
 
@@ -22,17 +32,6 @@ int currentMinute = myTime.getMinutes();
 int currentSecond = myTime.getSeconds();
 ```
 
-#### Month and DayOfWeek
-
-Enumeration types for representing months and days:
-
-```cpp
-// Using the Month enumeration
-Month::JANUARY, Month::FEBRUARY, Month::MARCH, /* ... */
-
-// Using the DayOfWeek enumeration
-DayOfWeek::MONDAY, DayOfWeek::TUESDAY, /* ... */
-```
 
 #### AlarmMatch
 
@@ -232,7 +231,7 @@ void playSpecialAnimation(int index) {
 }
 ```
 
-## Example Projects Overview
+## RTC Example Projects Overview
 
 The examples folder contains several demonstrations of RTC functionality combined with matrix animations:
 
@@ -262,83 +261,10 @@ For a one-hour project with minute-based updates, consider these three approache
 2. **Polling Method**: Simple to understand and modify. Good for beginners or when precise timing isn't critical.
 3. **Periodic Callback**: Good for custom intervals that might not align with clock times.
 
-## Getting Started
-
-Creating animations with YouveBeenNotified follows a simple step-by-step process:
-
-1. **Create Notifier Objects**
-   ```cpp
-   // Create hardware objects
-   Servo myServo;
-   
-   // Create animation controllers
-   ServoNotifier servoAnimator(myServo);
-   LEDNotifier ledAnimator(10, ANALOG);
-   ```
-
-2. **Create Animation Variables**
-   ```cpp
-   // Create named animations
-   KeyframeAnimation waveMotion("wave");
-   KeyframeAnimation breathingLight("breathing");
-   ```
-
-3. **Add Animations to Notifiers**
-   ```cpp
-   // Add animations to controllers
-   servoAnimator.addAnimation(waveMotion);
-   ledAnimator.addAnimation(breathingLight);
-   ```
-
-4. **Define Keyframes**
-   ```cpp
-   // Define servo animation
-   waveMotion.addKeyFrame(0, 0);      // Start at 0 degrees
-   waveMotion.addKeyFrame(90, 1000);  // Move to 90 degrees over 1 second
-   waveMotion.addKeyFrame(0, 2000);   // Return to 0 degrees over 1 second
-   
-   // Define LED animation
-   breathingLight.addKeyFrame(0, 0);      // Start off
-   breathingLight.addKeyFrame(255, 1000); // Fade to full brightness over 1 second
-   breathingLight.addKeyFrame(0, 2000);   // Fade to off over 1 second
-   ```
-
-5. **Start Animations**
-   ```cpp
-   // Start animations
-   servoAnimator.playAnimation("wave", LOOP);
-   ledAnimator.playAnimation("breathing", LOOP);
-   ```
-
-6. **Update in Loop**
-   ```cpp
-   void loop() {
-     // Update animations
-     servoAnimator.update();
-     ledAnimator.update();
-     
-     // Apply servo value to hardware (for servo)
-     myServo.write(servoAnimator.getValue());
-   }
-   ```
-
-### KeyframeAnimation Class
-Stores a sequence of value/time keyframes for single-value animations.
-
-```cpp
-// Create an animation with a name
-KeyframeAnimation waveMotion("wave");
-
-// Add keyframes (value, time in ms)
-waveMotion.addKeyFrame(0, 0);      // Start at 0 degrees
-waveMotion.addKeyFrame(90, 1000);  // Move to 90 degrees over 1 second
-waveMotion.addKeyFrame(180, 2000); // Move to 180 degrees over 1 second
-```
-
-# YouveBeenNotified Library
 
 
-## Features
+
+## Notifier Objects for Animating Servos / LEDs Featur
 
 - Keyframe-based animation system for precise motion and light control
 - Compatible with servos, LEDs, and NeoPixel RGB strips
@@ -352,9 +278,9 @@ waveMotion.addKeyFrame(180, 2000); // Move to 180 degrees over 1 second
 
 
 
-## Core Components
+### Core Components
 
-### BaseNotifier Class
+#### BaseNotifier Class
 Base class that handles animation timing, interpolation, and playback control.
 
 ```cpp
@@ -372,7 +298,7 @@ animator.update();
 float value = animator.getValue();
 ```
 
-### ServoNotifier Class
+#### ServoNotifier Class
 Specialized animation controller for servo motors.
 
 ```cpp
@@ -388,7 +314,7 @@ servoAnimator.update();
 myServo.write(servoAnimator.getValue());  // Apply value to servo
 ```
 
-### LEDNotifier Class
+#### LEDNotifier Class
 Handles LED animation control with both analog (PWM) and digital modes.
 
 ```cpp
@@ -415,7 +341,7 @@ ledAnimator.playAnimation("breathing", LOOP);
 ledAnimator.update();
 ```
 
-### RGBKeyframeAnimation Class
+#### RGBKeyframeAnimation Class
 Stores a sequence of RGB color keyframes for NeoPixel animations.
 
 ```cpp
@@ -429,7 +355,7 @@ rainbow.addKeyFrame(0, 0, 255, 2000);   // Fade to Blue over 1s
 rainbow.addKeyFrame(255, 0, 0, 3000);   // Fade back to Red over 1s
 ```
 
-### RGBLEDNotifier Class
+#### RGBLEDNotifier Class
 Manages RGB LED strip animation for NeoPixels.
 
 ```cpp
@@ -645,14 +571,3 @@ breathing.setKeyFrameTime(1, 2000);  // Slow down fade-in
 rainbow.setKeyFrameColor(1, 255, 255, 0);  // Change to yellow
 ```
 
-## Examples
-
-The library includes several examples to help you get started:
-
-- **SimpleServoLED**: Basic servo and LED animation control
-- **NeoPixelAnimation**: RGB LED strip animation control
-- **AnimationBlending**: Smooth transitions between animations
-- **KeyframeModification**: Dynamic animation adjustment
-- **MultipleAnimations**: Managing multiple animations in one project
-
-Explore these examples through the Arduino IDE under File > Examples > YouveBeenNotified.
