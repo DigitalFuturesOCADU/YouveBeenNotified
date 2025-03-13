@@ -32,9 +32,12 @@
 // Include the RTC library
 #include "RTC.h"
 
-// Variables for timing and LED state
-unsigned long previousMillis = 0;
-long interval = 1000;
+// Variables for Serial Debug
+boolean showDebug = true;//toggles whether or not to show the debug printout
+int lastSecond = -1; //holds the previoius time value 
+
+
+
 bool ledState = false;
 volatile bool minuteFlag = false;  // Flag for minute update
 
@@ -77,25 +80,42 @@ void loop()
     minuteUpdate();     // Call the minute update function
   }
 
-  // Get current time for second display
+ 
+  
+  if(showDebug)
+  {
+    showTimeDebug();
+  }
+
+}
+
+// Prints out current minute/second valuse
+void showTimeDebug()
+{
+   // Get current time for second display
   RTCTime currentTime;
   RTC.getTime(currentTime);
-  
-  // Display seconds counting
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) 
+
+     // Current values
+  int currentMinute = currentTime.getMinutes();
+  int currentSecond = currentTime.getSeconds();
+
+// Check if second has changed
+  if (currentSecond != lastSecond)
   {
-    previousMillis = currentMillis;
-    Serial.print("Time: ");
-    Serial.print(currentTime.getHour());
+    Serial.print("DEBUG Time: ");
+    Serial.print(currentMinute);
     Serial.print(":");
-    Serial.print(currentTime.getMinutes());
-    Serial.print(":");
-    Serial.print(currentTime.getSeconds());
+    Serial.print(currentSecond);
     Serial.print(" | LED state: ");
     Serial.println(ledState ? "ON" : "OFF");
+
+    lastSecond = currentSecond;
   }
+
 }
+
+
 
 // This function is triggered by the RTC alarm
 void alarmCallback() 
@@ -118,14 +138,9 @@ void minuteUpdate()
   // Print update message
   Serial.println("---------------------");
   Serial.println("MINUTE UPDATE");
-  Serial.print("Current time: ");
-  Serial.print(currentTime.getHour());
-  Serial.print(":");
-  Serial.print(currentTime.getMinutes());
-  Serial.print(":");
-  Serial.print(currentTime.getSeconds());
-  Serial.println();
+  Serial.print("Current Minute: ");
+  Serial.println(currentTime.getMinutes());
   Serial.print("LED switched to: ");
-  Serial.println(ledState ? "ON" : "OFF");
+  Serial.println(ledState ? "ON" : "OFF");  //looks at the current state of the LED to determine what to print
   Serial.println("---------------------");
 }
