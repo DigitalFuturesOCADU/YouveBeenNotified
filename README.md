@@ -337,32 +337,6 @@ waveMotion.addKeyFrame(180, 2000); // Move to 180 degrees over 1 second
 
 # YouveBeenNotified Library
 
-| ![Servo Animation](docs/servowave.gif) | ![LED Breathing](docs/ledbreathing.gif) |
-|------------------------------------|------------------------------------|
-| ![RGB Rainbow](docs/rgbrainbow.gif) | ![RGB Fire](docs/rgbfire.gif) |
-
-YouveBeenNotified is a library that enables keyframe-based animation control for servos, LEDs, and RGB LED strips on Arduino. It offers a game-like animation system with smooth transitions, blending, and precise timing control. This library is designed for physical computing courses, making it accessible for beginners while offering advanced features for complex projects.
-
-## Table of Contents
-- [Features](#features)
-- [Installation](#installation)
-- [Core Components](#core-components)
-    - [KeyframeAnimation Class](#keyframeanimation-class)
-    - [YouveBeenNotified Class](#youvebeennotified-class)
-    - [LEDNotifier Class](#lednotifier-class)
-    - [RGBKeyframeAnimation Class](#rgbkeyframeanimation-class)
-    - [RGBLEDNotifier Class](#rgblednotifier-class)
-    - [PlayMode Types](#playmode-types)
-    - [AnimationState Types](#animationstate-types)
-- [Basic Usage](#basic-usage)
-    - [Servo Animation](#servo-animation)
-    - [LED Animation](#led-animation)
-    - [RGB LED Animation](#rgb-led-animation)
-- [Advanced Features](#advanced-features)
-    - [Animation Blending](#animation-blending)
-    - [Value Adjustment](#value-adjustment)
-    - [Dynamic Keyframe Modification](#dynamic-keyframe-modification)
-- [Examples](#examples)
 
 ## Features
 
@@ -376,12 +350,7 @@ YouveBeenNotified is a library that enables keyframe-based animation control for
 - Library of RGB color animations
 - Simple to use for beginners, powerful for advanced users
 
-## Installation
 
-1. Download the latest release as a ZIP file
-2. In the Arduino IDE, go to Sketch > Include Library > Add .ZIP Library
-3. Select the downloaded ZIP file
-4. The library and examples will be available under "YouveBeenNotified"
 
 ## Core Components
 
