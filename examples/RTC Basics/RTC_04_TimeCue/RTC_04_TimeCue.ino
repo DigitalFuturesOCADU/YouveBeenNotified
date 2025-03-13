@@ -1,21 +1,21 @@
 /*
- * RTC Minute Counter with Bidirectional Counting and Alarm
+ * RTC Minute Counter with Bidirectional Counting and Time Cues
  * 
  * This sketch demonstrates how to use the RTC polling functionality to count
  * and display minutes on the LED matrix. It can count either up to 60 or down from 60.
- * Added alarm functionality that triggers at a specific minute.
+ * Added cue functionality that triggers at a specific minute.
  * 
  * Key Functions:
  * - minuteUpdate(): Updates the counter based on count direction
  * - showTimeDebug(): Displays current second count and counter value
  * - displayMinute(): Draws the current minute value on the LED matrix
- * - drawAlarm(): Triggers when the alarm minute is reached, lighting up all LEDs
+ * - triggerCue(): Triggers when the cue minute is reached, lighting up all LEDs
  * 
  * Key Variables:
  * - countDirection: Determines counting direction (0 = up to 60, 1 = down from 60)
  * - lastMinute: Stores the last minute value to detect changes
  * - lastSecond: Stores the last second value to detect changes
- * - alarmMinute: The specific minute when the alarm should trigger (default: 1)
+ * - cueMinute: The specific minute when the behavior should trigger (default: 1)
  * 
  * Drawing to the Matrix
  * See this guide for drawing things to the matrix : https://github.com/DigitalFuturesOCADU/YouveBeenNotified/blob/main/ArduinoGraphics_R4.md
@@ -41,8 +41,8 @@ int currentSecond;         // stores the current second from the RTC
 int lastMinute = -1;       // Used to detect minute changes
 int updateInterval = 1;    // Minutes between counter updates (can be changed)
 
-// Alarm variables
-int alarmMinute = 1;       // The minute at which the alarm should trigger (configurable)
+// Time Cue variables
+int cueMinute = 1;       // The minute at which the alarm should trigger (configurable)
 
 void setup() 
 {
@@ -72,7 +72,7 @@ void setup()
   }
   
   Serial.print("Alarm set for minute: ");
-  Serial.println(alarmMinute);
+  Serial.println(cueMinute);
   
   // Display initial counter value
   displayMinute();
@@ -89,10 +89,10 @@ void loop()
   currentSecond = currentTime.getSeconds();
   
   // Check if it's time for the alarm
-  if (currentMinute == alarmMinute) {
+  if (currentMinute == cueMinute) {
     // Trigger the alarm
-    Serial.println("ALARM TRIGGERED!");
-    drawAlarm();
+    Serial.println("CUE TRIGGERED!");
+    triggerCue();
   } else {
     // Check if minute has changed
     if (currentMinute != lastMinute) 
@@ -191,8 +191,8 @@ void displayMinute()
   matrix.endDraw();
 }
 
-// Alarm function - lights up all LEDs on the matrix when triggered
-void drawAlarm() 
+// cue function - lights up all LEDs on the matrix when triggered
+void triggerCue() 
 {
   matrix.beginDraw();
   matrix.clear(); // Clear the previous display
@@ -207,8 +207,8 @@ void drawAlarm()
   matrix.endDraw();
   
   Serial.println("---------------------");
-  Serial.println("ALARM ACTIVATED");
-  Serial.print("Alarm Minute: ");
-  Serial.println(alarmMinute);
+  Serial.println("Cue ACTIVATED");
+  Serial.print("Cue Minute: ");
+  Serial.println(cueMinute);
   Serial.println("---------------------");
 }
