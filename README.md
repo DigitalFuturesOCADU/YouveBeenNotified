@@ -3,13 +3,19 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Installing the Library](#installing-the-library)
+- [Using the LED Matrix for Debugging](#using-the-led-matrix-for-debugging)
 - [Real Time Clock (RTC) on Arduino R4 WiFi](#real-time-clock-rtc-on-arduino-r4-wifi)
   - [Guide to Arduino R4 Wifi RTC](#guide-to-arduino-r4-wifi-rtc)
   - [Key RTC Data Types](#key-rtc-data-types)
   - [Essential RTC Methods](#essential-rtc-methods)
-  - [Combining RTC with Animation Timing](#combining-rtc-with-animation-timing)
-  - [RTC Example Projects Overview](#rtc-example-projects-overview)
-  - [Choosing the Right Timing Method](#choosing-the-right-timing-method)
+- [Using the LED Matrix Display](#using-the-led-matrix-display)
+  - [Basic Setup](#basic-setup)
+  - [Display Patterns](#display-patterns)
+  - [Best Practices](#best-practices)
+  - [Matrix Properties](#matrix-properties)
+- [Combining RTC with Animation Timing](#combining-rtc-with-animation-timing)
+- [RTC Example Projects Overview](#rtc-example-projects-overview)
 - [Notifier Objects for Animating Servos / LEDs Featur](#notifier-objects-for-animating-servos--leds-featur)
   - [Core Components](#core-components)
   - [Basic Usage](#basic-usage)
@@ -21,6 +27,19 @@ This library introduces methods and examples for Project 3 that will assist in :
 - Reading / Using information from the Real Time Clock
 - Controlling Servos and other actuators as outputs
 - Drawing the the LED Matrix for Debugging
+
+## Installing the Library
+
+- Open the Arduino Library Manager
+- Search YouveBeenNotified or DIGF
+- Press the **Install** Button *Note* If you have previously installed the library, press **Update**
+
+## Using the LED Matrix for Debugging
+
+For this project, we will be using the LED Matrix for Debugging and back-end information
+
+- This will use the ArduinoAnimation library, which should already be installed
+- A specific guide for using this library with the R4 Wifi is available here [Arduino Graphics Guide](ArduinoGraphics_R4.md)
 
 ## Real Time Clock (RTC) on Arduino R4 WiFi
 
@@ -45,28 +64,6 @@ int currentMinute = myTime.getMinutes();
 int currentSecond = myTime.getSeconds();
 ```
 
-
-#### AlarmMatch
-
-Controls which time components trigger an alarm:
-
-```cpp
-// Create an alarm match for a specific minute change
-AlarmMatch minuteMatch;
-minuteMatch.addMatchSecond(); // Triggers when seconds == 0
-```
-
-#### Period
-
-Used for periodic callbacks at regular intervals:
-
-```cpp
-// Periodic interval options
-Period::ONCE_EVERY_1_SEC    // Trigger once per second
-Period::N2_TIMES_EVERY_SEC  // Trigger twice per second
-Period::N4_TIMES_EVERY_SEC  // Trigger 4 times per second
-// And other options...
-```
 
 ### Essential RTC Methods
 
@@ -102,53 +99,146 @@ void loop() {
 }
 ```
 
-#### Setting Alarms
+## Using the LED Matrix Display
 
-Alarms trigger a callback function when specified time conditions are met:
+The Arduino R4 WiFi includes a built-in 12x8 LED matrix that's perfect for displaying information and debug data. Here are the key methods and patterns for using the display effectively.
+
+### Basic Setup
 
 ```cpp
-// Alarm callback function (must be defined before it's referenced)
-void alarmCallback() {
-  // Code to run when the alarm triggers
-  // Keep this function BRIEF - set a flag and return
-  minuteFlag = true;
-}
+#include "ArduinoGraphics.h"
+#include "Arduino_LED_Matrix.h"
+
+ArduinoLEDMatrix matrix;
 
 void setup() {
-  // ...RTC setup code...
-  
-  // Set up an alarm for the start of each minute (when seconds = 0)
-  RTCTime alarmTime;
-  alarmTime.setSecond(0);  // Trigger when seconds = 0
-  
-  // Create an AlarmMatch to specify which components to match
-  AlarmMatch matchTime;
-  matchTime.addMatchSecond();  // Only match the seconds
-  
-  // Set the alarm with our callback
-  RTC.setAlarmCallback(alarmCallback, alarmTime, matchTime);
+  if (!matrix.begin()) {
+    Serial.println("Matrix initialization failed!");
+    while (1);
+  }
 }
 ```
 
-#### Using Periodic Callbacks
+### Display Patterns
 
-For regular time intervals:
+#### Showing Numbers
 
 ```cpp
-// Periodic callback function
-void periodicCallback() {
-  // Code to run at each interval
-  // Keep this function BRIEF - set a flag and return
-  secondFlag = true;
-}
-
-void setup() {
-  // ...RTC setup code...
+void displayNumber(int value) {
+  matrix.beginDraw();
+  matrix.clear();
   
-  // Set up a periodic callback that triggers once per second
-  RTC.setPeriodicCallback(periodicCallback, Period::ONCE_EVERY_1_SEC);
+  // Configure text properties
+  matrix.stroke(0xFFFFFFFF);
+  matrix.textFont(Font_5x7);
+  
+  // Center the number
+  String numStr = String(value);
+  int xPos = (matrix.width() - (numStr.length() * 5)) / 2;
+  matrix.text(numStr, xPos, 1);
+  
+  matrix.endDraw();
 }
 ```
+
+#### Progress Indicator
+
+```cpp
+void showProgress(int percentage) {
+  matrix.beginDraw();
+  matrix.clear();
+  
+  // Map percentage to matrix width
+  int fillWidth = map(percentage, 0, 100, 0, matrix.width());
+  
+  // Draw progress bar
+  for(int x = 0; x < fillWidth; x++) {
+    matrix.point(x, 3);
+    matrix.point(x, 4);
+  }
+  
+  matrix.endDraw();
+}
+```
+
+#### Status Indicators
+
+```cpp
+void showState(int state) {
+  matrix.beginDraw();
+  matrix.clear();
+  
+  switch(state) {
+    case 0:  // Idle - circle
+      matrix.circle(6, 4, 3);
+      break;
+    case 1:  // Active - filled circle
+      matrix.fill(0xFFFFFFFF);
+      matrix.circle(6, 4, 3);
+      break;
+    case 2:  // Error - X
+      matrix.line(3, 2, 8, 6);
+      matrix.line(3, 6, 8, 2);
+      break;
+  }
+  
+  matrix.endDraw();
+}
+```
+
+#### Scrolling Messages
+
+```cpp
+void showScrollingMessage(const char* message) {
+  matrix.beginDraw();
+  matrix.clear();
+  
+  matrix.stroke(0xFFFFFFFF);
+  matrix.textFont(Font_4x6);
+  matrix.textScrollSpeed(75);  // Milliseconds between scroll steps
+  
+  matrix.beginText(0, 1);
+  matrix.print(message);
+  matrix.endText(SCROLL_LEFT);
+  
+  matrix.endDraw();
+}
+```
+
+### Best Practices
+
+1. **Drawing Operations**
+   - Always wrap drawing code between `beginDraw()` and `endDraw()`
+   - Clear the display with `clear()` before drawing new content
+   - Use `stroke()` to set the LED state (0xFFFFFFFF for on)
+
+2. **Text Display**
+   - Use `Font_5x7` for numbers and large text
+   - Use `Font_4x6` for scrolling messages
+   - Center text by calculating position based on string length
+
+3. **Animation**
+   - Use `millis()` for timing instead of `delay()`
+   - Keep scrolling messages brief
+   - Update display only when content changes
+
+4. **Debug Information**
+   - Show critical states with distinct patterns
+   - Use progress bars for percentage-based data
+   - Implement simple animations for active/idle states
+
+### Matrix Properties
+
+- Width: 12 pixels (`matrix.width()`)
+- Height: 8 pixels (`matrix.height()`)
+- Available Fonts: 
+  - `Font_4x6` (compact)
+  - `Font_5x7` (standard)
+- Scroll Directions:
+  - `SCROLL_LEFT`
+  - `SCROLL_RIGHT`
+
+For more detailed information about matrix drawing methods, see the [Arduino Graphics Guide](ArduinoGraphics_R4.md).
 
 ## Combining RTC with Animation Timing
 
@@ -248,31 +338,36 @@ void playSpecialAnimation(int index) {
 
 The examples folder contains several demonstrations of RTC functionality combined with matrix animations:
 
-### Serial Examples
-Basic demos showing RTC functionality with Serial output:
-- **RTC_minuteTrigger_alarm**: Uses alarm method to trigger on minute changes
-- **RTC_minuteTrigger_getTime**: Uses polling method to detect minute changes
-- **RTC_minuteTrigger_interrupt**: Uses periodic callback with counter for minute changes
+### RTC_01_CountMinutes
+Demonstrates basic RTC polling to track and display minutes on the LED matrix.
+- Counts up to 60 or down from 60 (configurable direction)
+- Displays the current minute count on the LED matrix
+- Uses polling technique to check time at regular intervals
+- Includes debug output through Serial Monitor
 
-### Matrix Shape Examples
-Demonstrates changing shapes on the LED matrix based on time:
-- **RTC_minuteTrigger_Shape_alarm**: Changes shapes at precise minute intervals using alarms
-- **RTC_minuteTrigger_Shape_getTime**: Changes shapes by polling RTC time
-- **RTC_minuteTrigger_Shape_interval**: Changes shapes using periodic callbacks
+### RTC_02_CycleShapes
+Shows how to change displayed patterns on the LED matrix based on minute changes.
+- Cycles through 5 different shapes: rectangle outline, filled rectangle, circle outline, filled circle, crossed lines
+- Changes to next shape at the start of each minute
+- Includes debug output showing current time and shape index
+- Demonstrates simple shape drawing on the matrix display
 
-### Matrix Animation Examples
-Shows smooth animations controlled by RTC timing:
-- **RTC_minuteTrigger_Anim_alarm**: Changes sine wave animation speed at each minute using alarms
-- **RTC_minuteTrigger_Anim_getTime**: Changes animation by polling RTC time
-- **RTC_minuteTrigger_Anim_interval**: Changes animation using periodic callbacks
+### RTC_03_IncrementLEDs
+Visualizes time passage by sequentially illuminating LEDs across the matrix.
+- Each minute lights up one additional LED in sequence
+- Fills matrix from left-to-right, top-to-bottom
+- Resets when matrix is completely filled
+- Shows how to map linear time to 2D display coordinates
 
-## Choosing the Right Timing Method
+### RTC_04_TimeCue
+Demonstrates triggering special events at specific times.
+- Displays minute counting similar to RTC_01_CountMinutes
+- Adds a special "cue" function that activates at a configured minute
+- When cue triggers, the entire matrix illuminates as a visual alert
+- Shows how to implement time-based event triggers
 
-For a one-hour project with minute-based updates, consider these three approaches:
+Each example provides a foundation for your own time-based projects, from simple counting to timed event triggers that can be used with servo animations and LED notifications.
 
-1. **Alarm Method**: Most precise for time-specific triggers. Best for exact timing at specific points during the hour.
-2. **Polling Method**: Simple to understand and modify. Good for beginners or when precise timing isn't critical.
-3. **Periodic Callback**: Good for custom intervals that might not align with clock times.
 
 
 
