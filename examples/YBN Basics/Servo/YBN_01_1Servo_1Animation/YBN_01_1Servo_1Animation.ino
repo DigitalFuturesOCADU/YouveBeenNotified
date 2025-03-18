@@ -17,6 +17,7 @@
  * - notifier: ServoNotifier that handles the animation
  * - servoAnimation: Defines the keyframes and timing for the animation
  * - animationName: String variable storing the name of the animation
+ * - animationSpeed: Controls animation playback rate (1.0 = normal, 2.0 = double, 0.5 = half)
  * 
  * Drawing to the Matrix
  * See this guide for drawing things to the matrix : https://github.com/DigitalFuturesOCADU/YouveBeenNotified/blob/main/ArduinoGraphics_R4.md
@@ -38,6 +39,13 @@
  *     notifier.playAnimation(animationName, BOOMERANG);
  *   • You can change the mode during runtime using:
  *     notifier.setPlaybackMode(newMode);
+ * 
+ * - Changing Animation Speed:
+ *   • Change the playback rate of the entire animation:
+ *     notifier.setGlobalSpeed(animationSpeed);
+ *   • 1.0 = normal speed (100%)
+ *   • 2.0 = double speed (200%)
+ *   • 0.5 = half speed (50%) 
  */
 
 // Include the required libraries
@@ -62,6 +70,9 @@ String animationName = "Wave";
 
 // Create a KeyframeAnimation
 KeyframeAnimation servoAnimation(animationName);
+
+// Animation speed control - 1.0 is normal speed
+float animationSpeed = 1.0;
 
 void setup() 
 {
@@ -98,10 +109,15 @@ void setup()
   // Add the animation to the notifier
   notifier.addAnimation(servoAnimation);
   
+  // Set animation speed
+  notifier.setGlobalSpeed(animationSpeed);
+  
   // Start playing the animation in LOOP mode
   notifier.playAnimation(animationName, LOOP);
   
   Serial.println("Animation started!");
+  Serial.print("Animation speed: ");
+  Serial.println(animationSpeed);
   
   // Display initial angle on matrix
   displayServoAngle(0);
@@ -138,6 +154,9 @@ void printAnimationInfo()
   
   Serial.print("Current Value: ");
   Serial.println(notifier.getValue());
+  
+  Serial.print("Animation Speed: ");
+  Serial.println(animationSpeed);
   
   Serial.print("Time to Next Keyframe: ");
   Serial.print(notifier.timeToNextKey());
