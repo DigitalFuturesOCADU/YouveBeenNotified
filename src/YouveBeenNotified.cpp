@@ -224,21 +224,16 @@ float ServoNotifier::calculateCurrentValue() {
     unsigned long currentTime = millis();
     unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
     
-    // Scale by global speed
-    if (globalSpeed != 0) {
-        effectiveTime = static_cast<unsigned long>(effectiveTime / globalSpeed);
-    }
-    
     // Handle single keyframe case
     if (currentAnimation->getKeyframeCount() == 1) {
         currentValue = currentAnimation->getKeyFrameValue(0);
         return currentValue;
     }
     
-    // Find current keyframe pair based on time
+    // Get animation duration (scaled by globalSpeed)
     unsigned long animationDuration = currentAnimation->getKeyFrameTime(
         currentAnimation->getKeyframeCount() - 1
-    );
+    ) / globalSpeed;
     
     // Handle animation completion
     if (effectiveTime >= animationDuration) {
@@ -280,15 +275,17 @@ float ServoNotifier::calculateCurrentValue() {
     if (!isReversing) {
         // Forward playback
         while (nextKeyframeIndex < currentAnimation->getKeyframeCount() && 
-               effectiveTime >= currentAnimation->getKeyFrameTime(nextKeyframeIndex)) {
+               effectiveTime >= (currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed)) {
             currentKeyframeIndex = nextKeyframeIndex;
             nextKeyframeIndex++;
             keyframeUpdated = true;
         }
     } else {
         // Reverse playback
+        unsigned long scaledAnimationDuration = animationDuration; // Already scaled above
         while (nextKeyframeIndex >= 0 && 
-               effectiveTime >= (animationDuration - currentAnimation->getKeyFrameTime(nextKeyframeIndex))) {
+               effectiveTime >= (scaledAnimationDuration - 
+                               (currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed))) {
             currentKeyframeIndex = nextKeyframeIndex;
             nextKeyframeIndex--;
             keyframeUpdated = true;
@@ -301,12 +298,12 @@ float ServoNotifier::calculateCurrentValue() {
             float startVal = currentAnimation->getKeyFrameValue(currentKeyframeIndex);
             float endVal = currentAnimation->getKeyFrameValue(nextKeyframeIndex);
             
-            unsigned long startTime = currentAnimation->getKeyFrameTime(currentKeyframeIndex);
-            unsigned long endTime = currentAnimation->getKeyFrameTime(nextKeyframeIndex);
-            unsigned long segmentDuration = endTime - startTime;
+            unsigned long startTimeVal = currentAnimation->getKeyFrameTime(currentKeyframeIndex) / globalSpeed;
+            unsigned long endTimeVal = currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed;
+            unsigned long segmentDuration = endTimeVal - startTimeVal;
             
             if (segmentDuration > 0) {
-                float t = static_cast<float>(effectiveTime - startTime) / segmentDuration;
+                float t = static_cast<float>(effectiveTime - startTimeVal) / segmentDuration;
                 t = constrain(t, 0.0f, 1.0f);
                 currentValue = interpolateValue(startVal, endVal, t);
             } else {
@@ -319,12 +316,15 @@ float ServoNotifier::calculateCurrentValue() {
             float startVal = currentAnimation->getKeyFrameValue(currentKeyframeIndex);
             float endVal = currentAnimation->getKeyFrameValue(nextKeyframeIndex);
             
-            unsigned long startTime = animationDuration - currentAnimation->getKeyFrameTime(currentKeyframeIndex);
-            unsigned long endTime = animationDuration - currentAnimation->getKeyFrameTime(nextKeyframeIndex);
-            unsigned long segmentDuration = endTime - startTime;
+            unsigned long animDuration = animationDuration; // Already scaled
+            unsigned long startTimeVal = animDuration - 
+                                      (currentAnimation->getKeyFrameTime(currentKeyframeIndex) / globalSpeed);
+            unsigned long endTimeVal = animDuration - 
+                                     (currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed);
+            unsigned long segmentDuration = endTimeVal - startTimeVal;
             
             if (segmentDuration > 0) {
-                float t = static_cast<float>(effectiveTime - startTime) / segmentDuration;
+                float t = static_cast<float>(effectiveTime - startTimeVal) / segmentDuration;
                 t = constrain(t, 0.0f, 1.0f);
                 currentValue = interpolateValue(startVal, endVal, t);
             } else {
@@ -435,22 +435,7 @@ void ServoNotifier::setGlobalSpeed(float speed) {
         speed = 0.001;
     }
     
-    // If changing speed of a running animation, adjust timing
-    if (currentState == PLAYING && globalSpeed != speed) {
-        // Calculate current progress and adjust start time
-        unsigned long currentTime = millis();
-        unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
-        
-        // Calculate the animation progress time (how far into the animation we are)
-        float animationProgressTime = effectiveTime / globalSpeed;
-        
-        // Calculate what the real-time elapsed should be at the new speed
-        unsigned long newEffectiveTime = static_cast<unsigned long>(animationProgressTime * speed);
-        
-        // Adjust start time to maintain current animation position
-        startTime = currentTime - totalPausedTime - newEffectiveTime;
-    }
-    
+    // Simply update the speed factor - no timing adjustments needed
     globalSpeed = speed;
 }
 
@@ -504,22 +489,18 @@ unsigned long ServoNotifier::timeToNextKey() const {
     unsigned long currentTime = millis();
     unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
     
-    // Scale by global speed
-    if (globalSpeed != 0) {
-        effectiveTime = static_cast<unsigned long>(effectiveTime / globalSpeed);
-    }
-    
-    // Get the time of the next keyframe
+    // Get the time of the next keyframe (scaled by globalSpeed)
     unsigned long nextKeyTime;
     
     if (!isReversing) {
-        nextKeyTime = currentAnimation->getKeyFrameTime(nextKeyframeIndex);
+        nextKeyTime = currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed;
     } else {
         // For reverse playback
         unsigned long animationDuration = currentAnimation->getKeyFrameTime(
             currentAnimation->getKeyframeCount() - 1
-        );
-        nextKeyTime = animationDuration - currentAnimation->getKeyFrameTime(nextKeyframeIndex);
+        ) / globalSpeed;
+        nextKeyTime = animationDuration - 
+                    (currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed);
     }
     
     // If we're already past the next keyframe time, return 0
@@ -528,7 +509,7 @@ unsigned long ServoNotifier::timeToNextKey() const {
     }
     
     // Calculate time remaining to next keyframe
-    return static_cast<unsigned long>((nextKeyTime - effectiveTime) * globalSpeed);
+    return nextKeyTime - effectiveTime;
 }
 
 unsigned long ServoNotifier::timeRemaining() const {
@@ -546,21 +527,16 @@ unsigned long ServoNotifier::timeRemaining() const {
         unsigned long currentTime = millis();
         unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
         
-        // Scale by global speed
-        if (globalSpeed != 0) {
-            effectiveTime = static_cast<unsigned long>(effectiveTime / globalSpeed);
-        }
-        
         unsigned long animationDuration = currentAnimation->getKeyFrameTime(
             currentAnimation->getKeyframeCount() - 1
-        );
+        ) / globalSpeed;
         
         if (isReversing && currentMode == PLAY_BOOMERANG) {
             // For boomerang in reverse direction, calculate time to get back to the start
-            return static_cast<unsigned long>((animationDuration - (effectiveTime % animationDuration)) * globalSpeed);
+            return animationDuration - (effectiveTime % animationDuration);
         } else {
             // For regular loop or boomerang in forward direction
-            return static_cast<unsigned long>((animationDuration - (effectiveTime % animationDuration)) * globalSpeed);
+            return animationDuration - (effectiveTime % animationDuration);
         }
     }
     
@@ -568,14 +544,9 @@ unsigned long ServoNotifier::timeRemaining() const {
     unsigned long currentTime = millis();
     unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
     
-    // Scale by global speed
-    if (globalSpeed != 0) {
-        effectiveTime = static_cast<unsigned long>(effectiveTime / globalSpeed);
-    }
-    
     unsigned long animationDuration = currentAnimation->getKeyFrameTime(
         currentAnimation->getKeyframeCount() - 1
-    );
+    ) * globalSpeed;
     
     // If we're already past the end, return 0
     if (effectiveTime >= animationDuration) {
@@ -583,7 +554,7 @@ unsigned long ServoNotifier::timeRemaining() const {
     }
     
     // Calculate time remaining to the end
-    return static_cast<unsigned long>((animationDuration - effectiveTime) * globalSpeed);
+    return animationDuration - effectiveTime;
 }
 
 //======================================================================
@@ -769,21 +740,16 @@ float LEDNotifier::calculateCurrentValue() {
     unsigned long currentTime = millis();
     unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
     
-    // Scale by global speed
-    if (globalSpeed != 0) {
-        effectiveTime = static_cast<unsigned long>(effectiveTime / globalSpeed);
-    }
-    
     // Handle single keyframe case
     if (currentAnimation->getKeyframeCount() == 1) {
         currentValue = currentAnimation->getKeyFrameValue(0);
         return currentValue;
     }
     
-    // Find current keyframe pair based on time
+    // Get animation duration (scaled by globalSpeed)
     unsigned long animationDuration = currentAnimation->getKeyFrameTime(
         currentAnimation->getKeyframeCount() - 1
-    );
+    ) / globalSpeed;
     
     // Handle animation completion
     if (effectiveTime >= animationDuration) {
@@ -825,15 +791,17 @@ float LEDNotifier::calculateCurrentValue() {
     if (!isReversing) {
         // Forward playback
         while (nextKeyframeIndex < currentAnimation->getKeyframeCount() && 
-               effectiveTime >= currentAnimation->getKeyFrameTime(nextKeyframeIndex)) {
+               effectiveTime >= (currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed)) {
             currentKeyframeIndex = nextKeyframeIndex;
             nextKeyframeIndex++;
             keyframeUpdated = true;
         }
     } else {
         // Reverse playback
+        unsigned long scaledAnimationDuration = animationDuration; // Already scaled above
         while (nextKeyframeIndex >= 0 && 
-               effectiveTime >= (animationDuration - currentAnimation->getKeyFrameTime(nextKeyframeIndex))) {
+               effectiveTime >= (scaledAnimationDuration - 
+                               (currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed))) {
             currentKeyframeIndex = nextKeyframeIndex;
             nextKeyframeIndex--;
             keyframeUpdated = true;
@@ -846,12 +814,12 @@ float LEDNotifier::calculateCurrentValue() {
             float startVal = currentAnimation->getKeyFrameValue(currentKeyframeIndex);
             float endVal = currentAnimation->getKeyFrameValue(nextKeyframeIndex);
             
-            unsigned long startTime = currentAnimation->getKeyFrameTime(currentKeyframeIndex);
-            unsigned long endTime = currentAnimation->getKeyFrameTime(nextKeyframeIndex);
-            unsigned long segmentDuration = endTime - startTime;
+            unsigned long startTimeVal = currentAnimation->getKeyFrameTime(currentKeyframeIndex) / globalSpeed;
+            unsigned long endTimeVal = currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed;
+            unsigned long segmentDuration = endTimeVal - startTimeVal;
             
             if (segmentDuration > 0) {
-                float t = static_cast<float>(effectiveTime - startTime) / segmentDuration;
+                float t = static_cast<float>(effectiveTime - startTimeVal) / segmentDuration;
                 t = constrain(t, 0.0f, 1.0f);
                 currentValue = interpolateValue(startVal, endVal, t);
             } else {
@@ -864,12 +832,15 @@ float LEDNotifier::calculateCurrentValue() {
             float startVal = currentAnimation->getKeyFrameValue(currentKeyframeIndex);
             float endVal = currentAnimation->getKeyFrameValue(nextKeyframeIndex);
             
-            unsigned long startTime = animationDuration - currentAnimation->getKeyFrameTime(currentKeyframeIndex);
-            unsigned long endTime = animationDuration - currentAnimation->getKeyFrameTime(nextKeyframeIndex);
-            unsigned long segmentDuration = endTime - startTime;
+            unsigned long animDuration = animationDuration; // Already scaled
+            unsigned long startTimeVal = animDuration - 
+                                       (currentAnimation->getKeyFrameTime(currentKeyframeIndex) / globalSpeed);
+            unsigned long endTimeVal = animDuration - 
+                                     (currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed);
+            unsigned long segmentDuration = endTimeVal - startTimeVal;
             
             if (segmentDuration > 0) {
-                float t = static_cast<float>(effectiveTime - startTime) / segmentDuration;
+                float t = static_cast<float>(effectiveTime - startTimeVal) / segmentDuration;
                 t = constrain(t, 0.0f, 1.0f);
                 currentValue = interpolateValue(startVal, endVal, t);
             } else {
@@ -992,22 +963,7 @@ void LEDNotifier::setGlobalSpeed(float speed) {
         speed = 0.001;
     }
     
-    // If changing speed of a running animation, adjust timing
-    if (currentState == PLAYING && globalSpeed != speed) {
-        // Calculate current progress and adjust start time
-        unsigned long currentTime = millis();
-        unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
-        
-        // Calculate the animation progress time (how far into the animation we are)
-        float animationProgressTime = effectiveTime / globalSpeed;
-        
-        // Calculate what the real-time elapsed should be at the new speed
-        unsigned long newEffectiveTime = static_cast<unsigned long>(animationProgressTime * speed);
-        
-        // Adjust start time to maintain current animation position
-        startTime = currentTime - totalPausedTime - newEffectiveTime;
-    }
-    
+    // Simply update the speed factor - no timing adjustments needed
     globalSpeed = speed;
 }
 
@@ -1061,22 +1017,18 @@ unsigned long LEDNotifier::timeToNextKey() const {
     unsigned long currentTime = millis();
     unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
     
-    // Scale by global speed
-    if (globalSpeed != 0) {
-        effectiveTime = static_cast<unsigned long>(effectiveTime / globalSpeed);
-    }
-    
-    // Get the time of the next keyframe
+    // Get the time of the next keyframe (scaled by globalSpeed)
     unsigned long nextKeyTime;
     
     if (!isReversing) {
-        nextKeyTime = currentAnimation->getKeyFrameTime(nextKeyframeIndex);
+        nextKeyTime = currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed;
     } else {
         // For reverse playback
         unsigned long animationDuration = currentAnimation->getKeyFrameTime(
             currentAnimation->getKeyframeCount() - 1
-        );
-        nextKeyTime = animationDuration - currentAnimation->getKeyFrameTime(nextKeyframeIndex);
+        ) * globalSpeed;
+        nextKeyTime = animationDuration - 
+                     (currentAnimation->getKeyFrameTime(nextKeyframeIndex) / globalSpeed);
     }
     
     // If we're already past the next keyframe time, return 0
@@ -1085,7 +1037,7 @@ unsigned long LEDNotifier::timeToNextKey() const {
     }
     
     // Calculate time remaining to next keyframe
-    return static_cast<unsigned long>((nextKeyTime - effectiveTime) * globalSpeed);
+    return nextKeyTime - effectiveTime;
 }
 
 unsigned long LEDNotifier::timeRemaining() const {
@@ -1103,21 +1055,16 @@ unsigned long LEDNotifier::timeRemaining() const {
         unsigned long currentTime = millis();
         unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
         
-        // Scale by global speed
-        if (globalSpeed != 0) {
-            effectiveTime = static_cast<unsigned long>(effectiveTime / globalSpeed);
-        }
-        
         unsigned long animationDuration = currentAnimation->getKeyFrameTime(
             currentAnimation->getKeyframeCount() - 1
-        );
+        ) * globalSpeed;
         
         if (isReversing && currentMode == PLAY_BOOMERANG) {
             // For boomerang in reverse direction, calculate time to get back to the start
-            return static_cast<unsigned long>((animationDuration - (effectiveTime % animationDuration)) * globalSpeed);
+            return animationDuration - (effectiveTime % animationDuration);
         } else {
             // For regular loop or boomerang in forward direction
-            return static_cast<unsigned long>((animationDuration - (effectiveTime % animationDuration)) * globalSpeed);
+            return animationDuration - (effectiveTime % animationDuration);
         }
     }
     
@@ -1125,14 +1072,9 @@ unsigned long LEDNotifier::timeRemaining() const {
     unsigned long currentTime = millis();
     unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
     
-    // Scale by global speed
-    if (globalSpeed != 0) {
-        effectiveTime = static_cast<unsigned long>(effectiveTime / globalSpeed);
-    }
-    
     unsigned long animationDuration = currentAnimation->getKeyFrameTime(
         currentAnimation->getKeyframeCount() - 1
-    );
+    ) * globalSpeed;
     
     // If we're already past the end, return 0
     if (effectiveTime >= animationDuration) {
@@ -1140,7 +1082,7 @@ unsigned long LEDNotifier::timeRemaining() const {
     }
     
     // Calculate time remaining to the end
-    return static_cast<unsigned long>((animationDuration - effectiveTime) * globalSpeed);
+    return animationDuration - effectiveTime;
 }
 
 //======================================================================
