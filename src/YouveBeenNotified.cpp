@@ -440,8 +440,14 @@ void ServoNotifier::setGlobalSpeed(float speed) {
         // Calculate current progress and adjust start time
         unsigned long currentTime = millis();
         unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
-        unsigned long newEffectiveTime = static_cast<unsigned long>(effectiveTime * (globalSpeed / speed));
         
+        // Calculate the animation progress time (how far into the animation we are)
+        float animationProgressTime = effectiveTime / globalSpeed;
+        
+        // Calculate what the real-time elapsed should be at the new speed
+        unsigned long newEffectiveTime = static_cast<unsigned long>(animationProgressTime * speed);
+        
+        // Adjust start time to maintain current animation position
         startTime = currentTime - totalPausedTime - newEffectiveTime;
     }
     
@@ -991,8 +997,14 @@ void LEDNotifier::setGlobalSpeed(float speed) {
         // Calculate current progress and adjust start time
         unsigned long currentTime = millis();
         unsigned long effectiveTime = currentTime - startTime - totalPausedTime;
-        unsigned long newEffectiveTime = static_cast<unsigned long>(effectiveTime * (globalSpeed / speed));
         
+        // Calculate the animation progress time (how far into the animation we are)
+        float animationProgressTime = effectiveTime / globalSpeed;
+        
+        // Calculate what the real-time elapsed should be at the new speed
+        unsigned long newEffectiveTime = static_cast<unsigned long>(animationProgressTime * speed);
+        
+        // Adjust start time to maintain current animation position
         startTime = currentTime - totalPausedTime - newEffectiveTime;
     }
     
