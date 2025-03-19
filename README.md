@@ -9,25 +9,39 @@ A comprehensive library for creating time-based animations with Arduino R4 WiFi 
 - [Introduction](#introduction)
 - [Installing the Library](#installing-the-library)
 - [Real Time Clock (RTC)](#real-time-clock-rtc)
-  - [Key RTC Data Types](#key-rtc-data-types)
-  - [Essential RTC Methods](#essential-rtc-methods)
+    - [Key RTC Data Types](#key-rtc-data-types)
+        - [RTCTime](#rtctime)
+    - [Essential RTC Methods](#essential-rtc-methods)
+        - [Basic Setup](#basic-setup)
+        - [Getting Current Time](#getting-current-time)
 - [Using the LED Matrix Display](#using-the-led-matrix-display)
-  - [Basic Setup](#basic-setup)
-  - [Display Patterns](#display-patterns)
-  - [Best Practices](#best-practices)
+    - [Basic Setup](#basic-setup-1)
+    - [Display Patterns](#display-patterns)
+        - [Showing Numbers](#showing-numbers)
+        - [Progress Indicator](#progress-indicator)
+    - [Best Practices](#best-practices)
 - [Servo Motors](#servo-motors)
-  - [Servo Basics](#servo-basics)
-  - [Mechanisms and Attachments](#mechanisms-and-attachments)
+    - [Servo Basics](#servo-basics)
+        - [Types of Servos](#types-of-servos)
+        - [Specifications for Project Servo](#specifications-for-project-servo-sg90)
+        - [Movement Range](#movement-range)
+        - [Size and Power](#size-and-power)
+        - [Wiring](#wiring)
+        - [Arduino Servo Library](#arduino-servo-library)
+    - [Mechanisms and Attachments](#mechanisms-and-attachments)
 - [Notifier Animation System](#notifier-animation-system)
-  - [Core Components](#core-components)
-  - [Animation Playback Modes](#animation-playback-modes)
-  - [Basic Usage](#basic-usage)
-  - [Advanced Features](#advanced-features)
+    - [Core Components](#core-components)
+        - [KeyframeAnimation](#keyframeanimation)
+        - [ServoNotifier](#servonotifier)
+    - [Status and Information Methods](#status-and-information-methods)
+    - [Animation Playback Modes](#animation-playback-modes)
+    - [Step-by-Step Animation Creation](#step-by-step-animation-creation)
+    - [Basic Usage](#basic-usage)
+    - [Advanced Features](#advanced-features)
+        - [Multiple Animations](#multiple-animations)
+        - [Animation Speed Control](#animation-speed-control)
+        - [Crossfading](#crossfading)
 - [Example Projects](#example-projects)
-  - [RTC Basics](RTC_Basics_Examples.md)
-  - [RTC Simple Servo](RTC_Servo_Examples.md)
-  - [RTC with Animation System](RTC_YBN_Examples.md)
-  - [Animation System Basics](YBN_Basics_Examples.md)
 
 ## Introduction
 
@@ -37,7 +51,7 @@ This library introduces methods for Project 3 to assist with:
 - Creating keyframe-based animations for smooth motion control
 - Using the LED Matrix for debugging and visualization
 
-The library combines time-based triggers with smooth animation capabilities, allowing you to create sophisticated interactive projects with minimal code.
+The library combines time-based triggers with keyframe animation capabilities, allowing you to create complex kinetic projects.
 
 ## Installing the Library
 
@@ -103,12 +117,12 @@ void loop() {
 
 ## Using the LED Matrix Display
 
-The Arduino R4 WiFi includes a built-in 12x8 LED matrix that's perfect for displaying information and debug data. For detailed documentation on the ArduinoGraphics library for the LED matrix, see the [Arduino Graphics Guide](ArduinoGraphics_R4.md).
+The Arduino R4 WiFi's 12x8 LED matrix is useful for displaying information and debug data. For detailed documentation on the ArduinoGraphics library for the LED matrix, see the [Arduino Graphics Guide](ArduinoGraphics_R4.md).
 
 ### Basic Setup
 
 ```cpp
-#include "ArduinoGraphics.h"
+#include "ArduinoGraphics.h" //must be defined before Arduino_LED_Matrix.h
 #include "Arduino_LED_Matrix.h"
 
 ArduinoLEDMatrix matrix;
@@ -192,13 +206,24 @@ Servo motors provide precise angular control for your projects and are ideal for
 - **Positional (Hobby) Servos**: Can rotate to specific angles (typically 0-180°). These are the type we're using in this project.
 - **Continuous Rotation Servos**: Modified to rotate continuously like a normal motor, but with speed control rather than position control.
 
+#### Specifications for Project Servo (SG90)
+
+The [SG90 Micro Servo](https://www.dfrobot.com/product-255.html) used in this project has these key specifications:
+- Operating voltage: 4.8V to 6V
+- Operating speed: 0.1 sec/60° at 4.8V
+- Stall torque: 1.6 kg-cm at 4.8V
+- Weight: 9g
+- Dimensions: 22.2 x 11.8 x 31 mm
+- Angular range: 0-180 degrees
+
+
 #### Movement Range
 - Standard servo range is 0-180 degrees
 - Servo horns (attachments) can modify the effective range of movement when connected to mechanisms
 
 #### Size and Power
 - We're using micro servos in this project, which are small and lightweight
-- Larger servos provide more torque but require more power
+- Each servo has a speed (how fast can it move) and a torque (how much mass can it move) rating. Consult it's documentation
 
 #### Wiring
 A standard servo has three wires:
@@ -216,9 +241,8 @@ The Servo library comes pre-installed with the Arduino IDE, so you don't need to
 **Key Servo Commands:**
 
 - `attach(pin)`: Connects the servo object to the specified pin. Also accepts optional min/max pulse width parameters to calibrate the servo range.
-- `detach()`: Disconnects the servo from its pin, freeing it for other uses.
+- `detach()`: Disconnects the servo from its pin. This disengages the motor, but keeps a connection to arduino. Can be re-connected by calling attach() again
 - `write(angle)`: Moves the servo to the specified angle (0-180 degrees).
-- `writeMicroseconds(us)`: Sends a precise pulse width to the servo (typically 1000-2000µs).
 - `read()`: Returns the last angle written to the servo (0-180).
 
 Here's a simple example that moves a servo between two positions without using delay():
@@ -250,7 +274,7 @@ void loop() {
     myServo.write(angle);
   }
   
-  // Other code can run here without being blocked
+  // Other Things
 }
 ```
 
@@ -264,7 +288,7 @@ Servos can be connected to various mechanisms to create different types of movem
 
 ## Notifier Animation System
 
-The You've Been Notified library includes a powerful keyframe animation system that makes it easy to create smooth, complex servo movements.
+The You've Been Notified library includes a keyframe animation system that makes it easy to create complex servo movements.
 
 ### Core Components
 
@@ -294,6 +318,26 @@ notifier.addAnimation(waveMotion);
 // Play the animation
 notifier.playAnimation("wave", LOOP);  // Name and playback mode
 ```
+### Status and Information Methods
+
+#### Animation Status
+- `isPlaying()`: Returns true if an animation is currently active
+- `getCurrentAnimationName()`: Returns the name of the current animation
+- `getPlaybackMode()`: Returns the current playback mode (ONCE, LOOP, BOOMERANG)
+- `getElapsedTime()`: Returns milliseconds since animation started
+- `getTotalDuration()`: Returns total length of current animation in milliseconds
+
+#### Value Information
+- `getValue()`: Returns the current calculated position value
+- `hasChanged()`: Returns true if the value has updated since last check
+- `getStartValue()`: Returns the first keyframe value of current animation
+- `getEndValue()`: Returns the last keyframe value of current animation
+
+#### Animation Management
+- `hasAnimation(name)`: Checks if an animation with given name exists
+- `getAnimationCount()`: Returns total number of stored animations
+- `getAnimationNames()`: Returns array of all animation names
+- `getCurrentSpeed()`: Returns current global speed multiplier
 
 ### Animation Playback Modes
 
@@ -301,6 +345,97 @@ notifier.playAnimation("wave", LOOP);  // Name and playback mode
 - **LOOP**: Repeats the animation continuously
 - **BOOMERANG**: Plays forward, then backward, then repeats
 
+#### Animation Names
+
+Each animation is identified by a unique name string:
+- Names must be unique within a notifier
+- Used to play, stop, or manage specific animations
+- Case-sensitive (e.g., "wave" and "Wave" are different)
+
+```cpp
+// Creating animations with names
+KeyframeAnimation upDown("upDown");    // Name: "upDown"
+KeyframeAnimation wave("wave");        // Name: "wave"
+
+// Playing by name
+notifier.playAnimation("upDown", ONCE);
+notifier.stopAnimation("wave");
+
+// Check if exists
+if (notifier.hasAnimation("upDown")) {
+    // Animation exists
+}
+```
+### Step-by-Step Animation Creation
+
+#### Single Animation Example
+1. Create the notifier
+```cpp
+Servo myServo;
+ServoNotifier notifier(myServo);
+```
+
+2. Create and name an animation
+```cpp
+KeyframeAnimation wave("wave");
+```
+
+3. Add keyframes (position, time in ms)
+```cpp
+wave.addKeyFrame(0, 0);       // Start position
+wave.addKeyFrame(90, 1000);   // Move to 90° over 1 second
+wave.addKeyFrame(45, 2000);   // Move to 45° over next second
+wave.addKeyFrame(0, 3000);    // Return to start over final second
+```
+
+4. Add animation to notifier
+```cpp
+notifier.addAnimation(wave);
+```
+
+5. Start the animation
+```cpp
+notifier.playAnimation("wave", LOOP);
+```
+
+#### Multiple Animations Example
+1. Create notifier
+```cpp
+Servo myServo;
+ServoNotifier notifier(myServo);
+```
+
+2. Create and name two animations
+```cpp
+KeyframeAnimation wave("wave");
+KeyframeAnimation pulse("pulse");
+```
+
+3. Add keyframes to both
+```cpp
+// Wave animation
+wave.addKeyFrame(0, 0);
+wave.addKeyFrame(90, 1000);
+wave.addKeyFrame(0, 2000);
+
+// Pulse animation
+pulse.addKeyFrame(45, 0);
+pulse.addKeyFrame(60, 500);
+pulse.addKeyFrame(45, 1000);
+```
+
+4. Add both animations to notifier
+```cpp
+notifier.addAnimation(wave);
+notifier.addAnimation(pulse);
+```
+
+5. Play either animation
+```cpp
+notifier.playAnimation("wave", LOOP);
+// or
+notifier.playAnimation("pulse", LOOP);
+```
 ### Basic Usage
 
 ```cpp
