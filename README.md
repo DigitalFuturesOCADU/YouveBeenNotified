@@ -1,5 +1,5 @@
 # You've Been Notified - Arduino Animation Library
-A comprehensive library for creating time-based animations with Arduino R4 WiFi boards, with special focus on servo motor control, LED animations, and Real-Time Clock (RTC) integration.
+A library for creating time-based animations for Arduino R4 WiFi...for one hour.
 
 ![Servo Component Example](/images/servoComponents.gif)
 *Image by [Rizwan Syed](https://grabcad.com/library/micro-servo-motor-with-22-awg-wires-1)*
