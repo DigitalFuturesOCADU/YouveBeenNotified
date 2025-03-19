@@ -2,7 +2,7 @@
 A comprehensive library for creating time-based animations with Arduino R4 WiFi boards, with special focus on servo motor control, LED animations, and Real-Time Clock (RTC) integration.
 
 ![Servo Component Example](/images/servoComponents.gif)
-*Image created by [Rizwan Syed](https://grabcad.com/library/micro-servo-motor-with-22-awg-wires-1)*
+*Image by [Rizwan Syed](https://grabcad.com/library/micro-servo-motor-with-22-awg-wires-1)*
 
 
 ## Table of Contents
@@ -202,9 +202,12 @@ Servo motors provide precise angular control for your projects and are ideal for
 
 #### Wiring
 A standard servo has three wires:
-- Red: Power (+5V)
 - Brown/Black: Ground (GND)
-- Yellow/Orange/White: Signal (connect to Arduino PWM pin)
+- Red: Power (+5V)
+- Yellow/Orange: Control/Signal (connect to any Arduino pin)
+
+![Servo Pin Diagram](/images/servoPins.jpg)
+*Typical servo wiring diagram showing the three essential connections*
 
 #### Arduino Servo Library
 
