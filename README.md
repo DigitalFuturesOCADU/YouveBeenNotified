@@ -56,9 +56,12 @@ The library combines time-based triggers with keyframe animation capabilities, a
 
 ## Installing the Library
 
+**Current version: 1.1.0**
+
 1. Open the Arduino Library Manager
 2. Search for "YouveBeenNotified" or "DIGF"
 3. Press the **Install** Button (*Note*: If you have previously installed the library, press **Update**)
+
 
 ## Real Time Clock (RTC)
 
