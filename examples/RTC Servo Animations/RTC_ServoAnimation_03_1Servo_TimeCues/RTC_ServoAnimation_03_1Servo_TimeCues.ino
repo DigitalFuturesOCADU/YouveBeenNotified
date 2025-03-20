@@ -15,7 +15,7 @@
  * 
  * Key Variables:
  * - animationSpeed: Controls the playback speed of all animations
- * - startOffset: Value added to the minute to make testing different cues easier
+ * - minuteOffset: Value added to the minute to make testing different cues easier
  * - cueMinutes[]: Array of specific minutes when animations should trigger
  * - myServo: Servo object to be controlled
  * - notifier: ServoNotifier that handles the animations
@@ -49,7 +49,7 @@ float animationSpeed = 1.0;
 
 // Time offset for testing - added to current minute to allow testing different
 // cues without waiting. Set to 0 for normal operation.
-int startOffset = 0;
+int minuteOffset = 0;
 
 // Variables for Serial Debug
 boolean showDebug = true;  // toggles whether or not to show the debug printout
@@ -116,7 +116,7 @@ void setup()
   Serial.print("Animation Speed: ");
   Serial.println(animationSpeed);
   Serial.print("Minute Offset for Testing: ");
-  Serial.println(startOffset);
+  Serial.println(minuteOffset);
   Serial.println("Cue Minutes:");
   
   for(int i = 0; i < 4; i++)
@@ -155,7 +155,7 @@ void loop()
   RTC.getTime(currentTime);
   
   // Get current minute and second values
-  currentMinute = (currentTime.getMinutes() + startOffset);  // Add offset and wrap around 60
+  currentMinute = (currentTime.getMinutes() + minuteOffset);  // Add offset and wrap around 60
   currentSecond = currentTime.getSeconds();
   
   // Check if minute has changed
