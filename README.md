@@ -30,6 +30,7 @@ A library for creating time-based animations for Arduino R4 WiFi...for one hour.
         - [Wiring](#wiring)
         - [Arduino Servo Library](#arduino-servo-library)
     - [Mechanisms and Attachments](#mechanisms-and-attachments)
+    - [Wiring Diagrams](#wiring-diagrams)
 - [Notifier Animation System](#notifier-animation-system)
     - [Core Components](#core-components)
         - [KeyframeAnimation](#keyframeanimation)
@@ -237,6 +238,8 @@ A standard servo has three wires:
 
 ![Servo Pin Diagram](/images/servoPins.jpg)
 *Typical servo wiring diagram showing the three essential connections*
+
+For complete wiring diagrams for both single and dual servo configurations, see the [Wiring Diagrams](Wiring_Diagrams.md) guide.
 
 #### Arduino Servo Library
 
