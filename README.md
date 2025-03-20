@@ -2,6 +2,7 @@
 A library for creating time-based animations for Arduino R4 WiFi...for one hour.
 
 ![Servo Component Example](/images/servoComponents.gif)
+
 *Image by [Rizwan Syed](https://grabcad.com/library/micro-servo-motor-with-22-awg-wires-1)*
 
 
