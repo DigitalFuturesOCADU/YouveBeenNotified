@@ -3,12 +3,12 @@
 These examples demonstrate the fundamental use of the Real Time Clock (RTC) on the Arduino R4 WiFi board, combined with the LED matrix display for visualization. They provide a foundation for understanding time-based trigger systems without the complexity of servo control or animations.
 
 ## Table of Contents
-- [RTC_01_CountMinutes](#rtc_01_countminutes)
-- [RTC_02_CycleShapes](#rtc_02_cycleshapes)
-- [RTC_03_IncrementLEDs](#rtc_03_incrementleds)
-- [RTC_04_TimeCue](#rtc_04_timecue)
+- [RTC_SimpleClock](#rtc_simpleclock)
+- [RTC_PatternCycle](#rtc_patterncycle)
+- [RTC_LEDFill](#rtc_ledfill)
+- [RTC_EventTrigger](#rtc_eventtrigger)
 
-## RTC_01_CountMinutes
+## RTC_SimpleClock
 
 **Description**: Demonstrates basic RTC polling to track and display minutes on the LED matrix.
 
@@ -19,16 +19,16 @@ These examples demonstrate the fundamental use of the Real Time Clock (RTC) on t
 - Includes debug output through Serial Monitor
 
 **Key Functions**:
-- `minuteUpdate()`: Updates the counter based on count direction
-- `showTimeDebug()`: Displays current second count and counter value
+- `checkTime()`: Polls the RTC and updates when the minute changes
+- `showTimeDebug()`: Displays current time values on Serial Monitor
 - `displayMinute()`: Draws the current minute value on the LED matrix
 
 **Key Variables**:
 - `countDirection`: Determines counting direction (0 = up to 60, 1 = down from 60)
 - `lastMinute`: Stores the last minute value to detect changes
-- `lastSecond`: Stores the last second value to detect changes
+- `currentMinute`: Stores the current minute from RTC
 
-## RTC_02_CycleShapes
+## RTC_PatternCycle
 
 **Description**: Shows how to change displayed patterns on the LED matrix based on minute changes.
 
@@ -39,16 +39,16 @@ These examples demonstrate the fundamental use of the Real Time Clock (RTC) on t
 - Demonstrates simple shape drawing on the matrix display
 
 **Key Functions**:
-- `minuteUpdate()`: Changes the displayed shape and prints status messages
-- `showTimeDebug()`: Displays current second count
+- `checkTime()`: Polls the RTC and updates when the minute changes
+- `showTimeDebug()`: Displays current time values on Serial Monitor
 - `displayShape()`: Draws the current shape on the LED matrix
 
 **Key Variables**:
 - `shapeIndex`: Tracks which shape is currently displayed
 - `lastMinute`: Stores the last minute value to detect changes
-- `lastSecond`: Stores the last second value to detect changes
+- `currentMinute`: Stores the current minute from RTC
 
-## RTC_03_IncrementLEDs
+## RTC_LEDFill
 
 **Description**: Visualizes time passage by sequentially illuminating LEDs across the matrix.
 
@@ -59,33 +59,33 @@ These examples demonstrate the fundamental use of the Real Time Clock (RTC) on t
 - Shows how to map linear time to 2D display coordinates
 
 **Key Functions**:
-- `minuteUpdate()`: Lights up the next LED and prints status messages
-- `showTimeDebug()`: Displays current second and LED position
+- `checkTime()`: Polls the RTC and updates when the minute changes
+- `showTimeDebug()`: Displays current time values on Serial Monitor
 - `updateLED()`: Lights up the current LED position on the matrix
 
 **Key Variables**:
 - `ledX`, `ledY`: Track the current LED position on the matrix
 - `lastMinute`: Stores the last minute value to detect changes
-- `lastSecond`: Stores the last second value to detect changes
+- `currentMinute`: Stores the current minute from RTC
 
-## RTC_04_TimeCue
+## RTC_EventTrigger
 
 **Description**: Demonstrates triggering special events at specific times.
 
 **Key Features**:
-- Displays minute counting similar to RTC_01_CountMinutes
+- Displays minute counting similar to RTC_SimpleClock
 - Adds a special "cue" function that activates at a configured minute
 - When cue triggers, the entire matrix illuminates as a visual alert
 - Shows how to implement time-based event triggers
 
 **Key Functions**:
-- `minuteUpdate()`: Updates the counter based on count direction
-- `showTimeDebug()`: Displays current second count and counter value
+- `checkTime()`: Polls the RTC and updates when the minute changes
+- `showTimeDebug()`: Displays current time values on Serial Monitor
 - `displayMinute()`: Draws the current minute value on the LED matrix
-- `triggerCue()`: Triggers when the cue minute is reached, lighting up all LEDs
+- `triggerCue()`: Activates when the target minute is reached, lighting up all LEDs
 
 **Key Variables**:
 - `countDirection`: Determines counting direction (0 = up to 60, 1 = down from 60)
 - `lastMinute`: Stores the last minute value to detect changes
-- `lastSecond`: Stores the last second value to detect changes
-- `cueMinute`: The specific minute when the behavior should trigger (default: 1)
+- `currentMinute`: Stores the current minute from RTC
+- `targetMinute`: The specific minute when the event should trigger (default: 30)

@@ -478,7 +478,8 @@ void loop() {
 ### Advanced Features
 
 #### Multiple Animations
-You can create and switch between multiple animations:
+
+Create and switch between different animation patterns:
 
 ```cpp
 // Create multiple animations
@@ -496,7 +497,8 @@ notifier.playAnimation("pulse", ONCE);
 ```
 
 #### Animation Speed Control
-Adjust playback speed without changing the keyframes:
+
+Adjust playback speed dynamically without modifying keyframes:
 
 ```cpp
 // Play at double speed
@@ -504,28 +506,41 @@ notifier.setGlobalSpeed(2.0);
 
 // Half speed
 notifier.setGlobalSpeed(0.5);
+
+// Return to normal speed
+notifier.setGlobalSpeed(1.0);
 ```
 
 #### Crossfading
-Smoothly transition between animations:
+
+Smoothly transition between animations for continuous motion:
 
 ```cpp
 // Blend from current animation to "pulse" over 500ms
 notifier.crossfadeTo("pulse", 500, LOOP);
+
+// You can also specify the playback mode for the target animation
+notifier.crossfadeTo("wave", 1000, BOOMERANG);
 ```
 
 ## Example Projects
 
-The library includes several example projects to help you get started:
+The library includes several example sketches to demonstrate key concepts:
 
-### [RTC Basics Examples](RTC_Basics_Examples.md)
-Simple examples showing how to use the Real Time Clock for timing events.
+| Category | Example | Description |
+|----------|---------|-------------|
+| **RTC Basics** | RTC_SimpleClock | Basic minute counter displayed on LED matrix |
+| | RTC_PatternCycle | Cycle through different shapes on the minute |
+| | RTC_LEDFill | Sequentially fill LEDs as time passes |
+| | RTC_EventTrigger | Trigger special events at specific times |
+| **Servo Control** | ServoBasics | Introduction to servo control methods |
+| | TimeBasedServo | Move servo based on current time |
+| **Animation System** | SimpleKeyframes | Basic keyframe animation creation |
+| | MultipleAnimations | Switching between different animations |
+| | AnimationCrossfade | Smooth transitions between animations |
 
-### [RTC Simple Servo Examples](RTC_Servo_Examples.md)
-Examples combining RTC with basic servo control.
-
-### [RTC with Animation System Examples](RTC_YBN_Examples.md)
-Advanced examples using RTC to trigger animations with the ServoNotifier system.
-
-### [Animation System Basics Examples](YBN_Basics_Examples.md)
-Focused examples demonstrating the core animation capabilities.
+For detailed instructions and code walkthroughs:
+- [RTC Basics Examples](RTC_Basics_Examples.md)
+- [RTC Simple Servo Examples](RTC_Servo_Examples.md)
+- [RTC with Animation System Examples](RTC_YBN_Examples.md)
+- [Animation System Basics Examples](YBN_Basics_Examples.md)
