@@ -288,10 +288,21 @@ void loop() {
 ### Mechanisms and Attachments
 
 Servos can be connected to various mechanisms to create different types of movement:
-- **Direct attachment**: The servo horn directly moves the notification element
-- **Linkages**: Connect the servo to rods or arms that amplify or transform the motion
-- **Cams**: Create cyclical or repeating patterns of movement
-- **Gear systems**: Modify the speed or torque of the servo's movement
+
+**Mechanical**
+- **Linear Actuator**: Converts rotational motion to linear (straight line) movement. See [Linear Actuator Guide](linear_actuator.md) for build instructions.
+- **[Kinetic Wearables Toolkit](https://github.com/socialbodylab/KineticWearablesToolkit)**: Collection of ready-made wearable servo mechanisms and attachments optimized for attaching to the body.
+- **[Thingiverse Micro Servo Mechanisms](https://www.thingiverse.com/search?q=micro+servo&page=1)**: Collection of 3D printable mechanisms and attachments designed for micro servos
+
+**Other Materials**
+
+- **Paper and Card Stock**: Create fluttering wings, fans, or flexible sculptures
+- **Fabric and Textiles**: Rippling banners, stretchy materials, or suspended cloth that drapes
+- **Natural Materials**: Feathers, leaves, or lightweight branches for organic movement
+- **Wire and Mesh**: Bendable sculptures that maintain shape while moving
+- **Lightweight Plastics**: Mylar sheets, cellophane, or thin flexible acrylic for fluid motion
+- **String/Thread**: Suspended elements that swing, bounce, or create pendulum effects
+
 
 ## Notifier Animation System
 
