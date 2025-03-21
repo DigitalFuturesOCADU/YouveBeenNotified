@@ -290,7 +290,7 @@ void loop() {
 Servos can be connected to various mechanisms to create different types of movement:
 
 **Mechanical**
-- **Linear Actuator**: Converts rotational motion to linear (straight line) movement. See [Linear Actuator Guide](linear_actuator.md) for build instructions.
+- **Linear Actuator**: Converts rotational motion to linear (straight line) movement. See [Linear Actuator Guide](linear-actuator.md) for build instructions.
 - **[Kinetic Wearables Toolkit](https://github.com/socialbodylab/KineticWearablesToolkit)**: Collection of ready-made wearable servo mechanisms and attachments optimized for attaching to the body.
 - **[Thingiverse Micro Servo Mechanisms](https://www.thingiverse.com/search?q=micro+servo&page=1)**: Collection of 3D printable mechanisms and attachments designed for micro servos
 
