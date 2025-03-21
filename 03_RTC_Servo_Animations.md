@@ -3,12 +3,12 @@
 These examples demonstrate how to combine the Real Time Clock (RTC) with the ServoNotifier animation system to create sophisticated time-based animations. These are the most advanced examples in the library, showing the full power of the combined timing and animation capabilities.
 
 ## Table of Contents
-- [RTC-YBN_01_1Servo_simpleAsPossible](#rtc-ybn_01_1servo_simpleaspossible)
-- [RTC-YBN_01_1Servo_timeCues](#rtc-ybn_01_1servo_timecues)
-- [RTC-YBN_02_2Servo_simpleAsPossible](#rtc-ybn_02_2servo_simpleaspossible)
-- [RTC-YBN_04_2Servo_1Switch1Constant](#rtc-ybn_04_2servo_1switch1constant)
+- [RTC_ServoAnimation_01_1ServoSimple](#rtc_servoanimation_01_1servosimple)
+- [RTC_ServoAnimation_02_2ServosSimple](#rtc_servoanimation_02_2servossimple)
+- [RTC_ServoAnimation_03_1Servo_TimeCues](#rtc_servoanimation_03_1servo_timecues)
+- [RTC_ServoAnimation_04_2Servos_1Switch1Constant](#rtc_servoanimation_04_2servos_1switch1constant)
 
-## RTC-YBN_01_1Servo_simpleAsPossible
+## RTC_ServoAnimation_01_1ServoSimple
 
 **Description**: The simplest example of combining RTC with ServoNotifier animations, alternating between two animations every minute.
 
@@ -31,7 +31,7 @@ These examples demonstrate how to combine the Real Time Clock (RTC) with the Ser
 - `minuteOffset`: Value added to the minute to make testing different times easier
 - `playSpeed`: Controls animation playback speed
 
-## RTC-YBN_01_1Servo_timeCues
+## RTC_ServoAnimation_03_1Servo_TimeCues
 
 **Description**: A comprehensive example showing how to trigger different animations at specific minute "cues," with LED matrix display to show current animation status.
 
@@ -57,7 +57,7 @@ These examples demonstrate how to combine the Real Time Clock (RTC) with the Ser
 - `matrix`: ArduinoLEDMatrix object for the display
 - `animPlaying`: Tracks which animation is currently playing
 
-## RTC-YBN_02_2Servo_simpleAsPossible
+## RTC_ServoAnimation_02_2ServosSimple
 
 **Description**: Controls two servos with different animation patterns - one alternates between animations each minute, while the other continuously oscillates.
 
@@ -80,7 +80,7 @@ These examples demonstrate how to combine the Real Time Clock (RTC) with the Ser
 - `playSpeed`: Controls animation speed for both servos
 - `lastMinute`: Stores the last minute value to detect changes
 
-## RTC-YBN_04_2Servo_1Switch1Constant
+## RTC_ServoAnimation_04_2Servos_1Switch1Constant
 
 **Description**: Similar to the 2Servo_simpleAsPossible example, but with cleaner implementation and more debug output.
 

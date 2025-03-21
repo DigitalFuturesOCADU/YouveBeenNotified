@@ -3,12 +3,12 @@
 These examples demonstrate the fundamental use of the Real Time Clock (RTC) on the Arduino R4 WiFi board, combined with the LED matrix display for visualization. They provide a foundation for understanding time-based trigger systems without the complexity of servo control or animations.
 
 ## Table of Contents
-- [RTC_SimpleClock](#rtc_simpleclock)
-- [RTC_PatternCycle](#rtc_patterncycle)
-- [RTC_LEDFill](#rtc_ledfill)
-- [RTC_EventTrigger](#rtc_eventtrigger)
+- [RTC_01_CountMinutes](#rtc_01_countminutes)
+- [RTC_02_CycleShapes](#rtc_02_cycleshapes)
+- [RTC_03_IncrementLEDs](#rtc_03_incrementleds)
+- [RTC_04_TimeCue](#rtc_04_timecue)
 
-## RTC_SimpleClock
+## RTC_01_CountMinutes
 
 **Description**: Demonstrates basic RTC polling to track and display minutes on the LED matrix.
 
@@ -28,7 +28,7 @@ These examples demonstrate the fundamental use of the Real Time Clock (RTC) on t
 - `lastMinute`: Stores the last minute value to detect changes
 - `currentMinute`: Stores the current minute from RTC
 
-## RTC_PatternCycle
+## RTC_02_CycleShapes
 
 **Description**: Shows how to change displayed patterns on the LED matrix based on minute changes.
 
@@ -48,7 +48,7 @@ These examples demonstrate the fundamental use of the Real Time Clock (RTC) on t
 - `lastMinute`: Stores the last minute value to detect changes
 - `currentMinute`: Stores the current minute from RTC
 
-## RTC_LEDFill
+## RTC_03_IncrementLEDs
 
 **Description**: Visualizes time passage by sequentially illuminating LEDs across the matrix.
 
@@ -68,7 +68,7 @@ These examples demonstrate the fundamental use of the Real Time Clock (RTC) on t
 - `lastMinute`: Stores the last minute value to detect changes
 - `currentMinute`: Stores the current minute from RTC
 
-## RTC_EventTrigger
+## RTC_04_TimeCue
 
 **Description**: Demonstrates triggering special events at specific times.
 

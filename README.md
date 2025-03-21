@@ -546,18 +546,21 @@ The library includes several example sketches to demonstrate key concepts:
 
 | Category | Example | Description |
 |----------|---------|-------------|
-| **RTC Basics** | RTC_SimpleClock | Basic minute counter displayed on LED matrix |
-| | RTC_PatternCycle | Cycle through different shapes on the minute |
-| | RTC_LEDFill | Sequentially fill LEDs as time passes |
-| | RTC_EventTrigger | Trigger special events at specific times |
-| **Servo Control** | ServoBasics | Introduction to servo control methods |
-| | TimeBasedServo | Move servo based on current time |
-| **Animation System** | SimpleKeyframes | Basic keyframe animation creation |
-| | MultipleAnimations | Switching between different animations |
-| | AnimationCrossfade | Smooth transitions between animations |
+| **RTC Basics** | RTC_01_CountMinutes | Basic minute counter displayed on LED matrix |
+| | RTC_02_CycleShapes | Cycle through different shapes on the minute |
+| | RTC_03_IncrementLEDs | Sequentially fill LEDs as time passes |
+| | RTC_04_TimeCue | Trigger special events at specific times |
+| **Servo Control** | RTCservo_01_1Servo_AngleList | Introduction to servo control methods |
+| | RTCservo_02_2Servos_AngleList | Move servo based on current time |
+| | RTCservo_03_1Servo_RandomAngles | Control servo with random positions |
+| | RTCservo_04_2Servos_RandomAngles | Control two servos with random positions |
+| **RTC Servo Animations** | RTC_ServoAnimation_01_1ServoSimple | Simple example combining RTC with servo animations |
+| | RTC_ServoAnimation_02_2ServosSimple | Control two servo animations with RTC |
+| | RTC_ServoAnimation_03_1Servo_TimeCues | Trigger animations at specific minute cues |
+| | RTC_ServoAnimation_04_2Servos_1Switch1Constant | Advanced dual servo animation control |
 
 For detailed instructions and code walkthroughs:
-- [RTC Basics Examples](RTC_Basics_Examples.md)
-- [RTC Simple Servo Examples](RTC_Servo_Examples.md)
-- [RTC with Animation System Examples](RTC_YBN_Examples.md)
-- [Animation System Basics Examples](YBN_Basics_Examples.md)
+- [01 RTC Basics](./01_RTC_Basics.md)
+- [02 RTC Simple Servo](./02_RTC_Simple_Servo.md)
+- [03 RTC Servo Animations](./03_RTC_Servo_Animations.md)
+- [04 YBN Animation Basics](./04_YBN_Animation_Basics.md)
