@@ -520,6 +520,47 @@ void loop() {
     myServo.write(notifier.getValue());
   }
 }
+
+```cpp
+// Example: ServoAnimation_01_Sweep
+// Shows how to create a simple servo sweep using
+// a single keyframe and boomerang playback mode
+
+#include <Servo.h>
+#include "YouveBeenNotified.h"
+
+// Create servo and notifier objects
+Servo myServo;
+ServoNotifier notifier(myServo);
+
+void setup() {
+  // Attach servo to pin 9
+  myServo.attach(9);
+  
+  // Create a sweep animation
+  KeyframeAnimation sweep("sweep");
+  
+  // Add single keyframe to move from 0 to 180 over 1 second
+  sweep.addKeyFrame(0, 0);      // Start position
+  sweep.addKeyFrame(180, 1000); // End position
+  
+  // Add animation to notifier
+  notifier.addAnimation(sweep);
+  
+  // Play animation in boomerang mode (goes forward, then reverse)
+  notifier.playAnimation("sweep", BOOMERANG);
+}
+
+void loop() {
+  // Update animation calculations
+  notifier.update();
+  
+  // If value changed, update servo position
+  if (notifier.hasChanged()) {
+    myServo.write(notifier.getValue());
+  }
+}
+```
 ```
 
 ### Advanced Features
