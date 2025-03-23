@@ -387,7 +387,9 @@ if (notifier.hasAnimation("upDown")) {
 ### Step-by-Step Animation Creation
 
 #### Single Animation Example
-1. Create the notifier
+
+##### Before setup()
+1. Create the servo and notifier objects
 ```cpp
 Servo myServo;
 ServoNotifier notifier(myServo);
@@ -398,7 +400,13 @@ ServoNotifier notifier(myServo);
 KeyframeAnimation wave("wave");
 ```
 
-3. Add keyframes (position, time in ms)
+##### In setup()
+3. Attach servo to pin
+```cpp
+myServo.attach(9);  // Attach to pin 9 (or your chosen pin)
+```
+
+4. Add keyframes (position, time in ms)
 ```cpp
 wave.addKeyFrame(0, 0);       // Start position
 wave.addKeyFrame(90, 1000);   // Move to 90° over 1 second
@@ -406,30 +414,44 @@ wave.addKeyFrame(45, 2000);   // Move to 45° over next second
 wave.addKeyFrame(0, 3000);    // Return to start over final second
 ```
 
-4. Add animation to notifier
+5. Add animation to notifier
 ```cpp
 notifier.addAnimation(wave);
 ```
 
-5. Start the animation
+6. Start the animation
 ```cpp
 notifier.playAnimation("wave", LOOP);
 ```
 
+##### In loop()
+7. Update the notifier and servo
+```cpp
+notifier.update();  // Calculate new positions
+if (notifier.hasChanged()) {
+  myServo.write(notifier.getValue());
+}
+```
+
 #### Multiple Animations Example
-1. Create notifier
+
+##### Before setup()
+1. Create servo and notifier objects
 ```cpp
 Servo myServo;
 ServoNotifier notifier(myServo);
-```
 
-2. Create and name two animations
-```cpp
 KeyframeAnimation wave("wave");
 KeyframeAnimation pulse("pulse");
 ```
 
-3. Add keyframes to both
+##### In setup()
+2. Attach servo
+```cpp
+myServo.attach(9);  // Attach to pin 9 (or your chosen pin)
+```
+
+3. Add keyframes to both animations
 ```cpp
 // Wave animation
 wave.addKeyFrame(0, 0);
@@ -448,12 +470,20 @@ notifier.addAnimation(wave);
 notifier.addAnimation(pulse);
 ```
 
-5. Play either animation
+5. Start with one animation
 ```cpp
 notifier.playAnimation("wave", LOOP);
-// or
-notifier.playAnimation("pulse", LOOP);
 ```
+
+##### In loop()
+6. Update animations
+```cpp
+notifier.update();  // Calculate new positions
+if (notifier.hasChanged()) {
+  myServo.write(notifier.getValue());
+}
+```
+
 ### Basic Usage
 
 ```cpp
