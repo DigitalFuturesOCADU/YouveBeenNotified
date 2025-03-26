@@ -521,6 +521,7 @@ void loop() {
   }
 }
 ```
+
 ```cpp
 // Example: ServoAnimation_01_Sweep
 // Shows how to create a simple servo sweep using
@@ -560,7 +561,6 @@ void loop() {
     myServo.write(notifier.getValue());
   }
 }
-```
 ```
 
 ### Advanced Features
