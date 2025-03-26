@@ -111,6 +111,11 @@ private:
 
 public:
     // Constructor
+    
+
+    ServoNotifier(int minAngle = 0, int maxAngle = 180);
+    
+    // The existing constructor remains unchanged
     ServoNotifier(Servo& servo, int minAngle = 0, int maxAngle = 180);
     
     // Animation management

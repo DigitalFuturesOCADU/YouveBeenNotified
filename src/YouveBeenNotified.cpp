@@ -58,8 +58,8 @@ unsigned long KeyframeAnimation::getKeyFrameTime(int index) const {
 // ServoNotifier Implementation
 //======================================================================
 
-ServoNotifier::ServoNotifier(Servo& servoRef, int minAngle, int maxAngle) 
-    : servo(&servoRef), 
+ServoNotifier::ServoNotifier(int minAngle, int maxAngle) 
+    : servo(nullptr), 
       minAngle(minAngle), 
       maxAngle(maxAngle),
       currentAnimation(nullptr),
