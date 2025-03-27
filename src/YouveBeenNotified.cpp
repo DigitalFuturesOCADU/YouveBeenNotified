@@ -58,8 +58,36 @@ unsigned long KeyframeAnimation::getKeyFrameTime(int index) const {
 // ServoNotifier Implementation
 //======================================================================
 
+// New constructor that doesn't require a Servo object
 ServoNotifier::ServoNotifier(int minAngle, int maxAngle) 
     : servo(nullptr), 
+      minAngle(minAngle), 
+      maxAngle(maxAngle),
+      currentAnimation(nullptr),
+      targetAnimation(nullptr),
+      currentMode(PLAY_ONCE),
+      currentState(IDLE),
+      globalSpeed(1.0),
+      startTime(0),
+      pauseTime(0),
+      totalPausedTime(0),
+      currentKeyframeIndex(0),
+      nextKeyframeIndex(0),
+      currentValue(0.0),
+      isReversing(false),
+      isPlayingBackward(false),
+      valueScale(1.0),
+      valueOffset(0.0),
+      minValue(-INFINITY),
+      maxValue(INFINITY),
+      isBlending(false),
+      blendStartTime(0),
+      blendDuration(0),
+      startValue(0.0) {
+}
+
+ServoNotifier::ServoNotifier(Servo& servoRef, int minAngle, int maxAngle) 
+    : servo(&servoRef), 
       minAngle(minAngle), 
       maxAngle(maxAngle),
       currentAnimation(nullptr),
@@ -1132,11 +1160,4 @@ void RGBKeyframeAnimation::getKeyFrameColor(int index, byte& r, byte& g, byte& b
     r = keyframes[index].red;
     g = keyframes[index].green;
     b = keyframes[index].blue;
-}
-
-unsigned long RGBKeyframeAnimation::getKeyFrameTime(int index) const {
-    if (index < 0 || index >= keyframes.size()) {
-        return 0;
-    }
-    return keyframes[index].time;
 }

@@ -110,12 +110,10 @@ private:
     float calculateCurrentValue();
 
 public:
-    // Constructor
-    
-
+    // New constructor that doesn't require a Servo object
     ServoNotifier(int minAngle = 0, int maxAngle = 180);
     
-    // The existing constructor remains unchanged
+    // Original constructor
     ServoNotifier(Servo& servo, int minAngle = 0, int maxAngle = 180);
     
     // Animation management
