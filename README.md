@@ -57,7 +57,7 @@ The library combines time-based triggers with keyframe animation capabilities, a
 
 ## Installing the Library
 
-**Current version: 1.1.0**
+**Current version: 1.1.3**
 
 1. Open the Arduino Library Manager
 2. Search for "YouveBeenNotified" or "DIGF"
