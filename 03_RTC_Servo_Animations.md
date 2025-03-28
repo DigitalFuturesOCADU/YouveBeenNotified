@@ -3,10 +3,29 @@
 These examples demonstrate how to combine the Real Time Clock (RTC) with the ServoNotifier animation system to create sophisticated time-based animations. These are the most advanced examples in the library, showing the full power of the combined timing and animation capabilities.
 
 ## Table of Contents
+- [ServoAnimation_00_1Servo_Sweep](#servoanimation_00_1servo_sweep)
 - [RTC_ServoAnimation_01_1ServoSimple](#rtc_servoanimation_01_1servosimple)
 - [RTC_ServoAnimation_02_2ServosSimple](#rtc_servoanimation_02_2servossimple)
 - [RTC_ServoAnimation_03_1Servo_TimeCues](#rtc_servoanimation_03_1servo_timecues)
 - [RTC_ServoAnimation_04_2Servos_1Switch1Constant](#rtc_servoanimation_04_2servos_1switch1constant)
+
+## ServoAnimation_00_1Servo_Sweep
+
+**Description**: A simple introductory example showing how to create a basic servo sweep animation using the ServoNotifier system without RTC integration.
+
+**Key Features**:
+- Single servo moves back and forth across its full range (0-180 degrees)
+- Uses only two keyframes to define the motion
+- BOOMERANG playback mode for automatic back-and-forth motion
+- Demonstrates the most basic animation setup possible
+
+**Key Functions**:
+- `setup()`: Initializes the servo and creates a simple sweep animation
+- `loop()`: Updates the animation and applies it to the servo
+
+**Key Variables**:
+- `myServo`: Servo object to be controlled
+- `notifier`: ServoNotifier that handles the animation
 
 ## RTC_ServoAnimation_01_1ServoSimple
 
