@@ -32,6 +32,11 @@ This configuration is used for all single-servo examples in the library. The ser
 
 ### Connection Details
 
+![Servo Pin Layout](/images/servoPins.jpg)
+
+*Standard servo pin configuration showing signal, power, and ground connections*
+
+
 | Component | Connection |
 |-----------|------------|
 | Servo 1 Signal | Pin 9 |
