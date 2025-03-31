@@ -8,6 +8,8 @@ These examples demonstrate how to combine the Real Time Clock (RTC) with the Ser
 - [RTC_ServoAnimation_02_2ServosSimple](#rtc_servoanimation_02_2servossimple)
 - [RTC_ServoAnimation_03_1Servo_TimeCues](#rtc_servoanimation_03_1servo_timecues)
 - [RTC_ServoAnimation_04_2Servos_1Switch1Constant](#rtc_servoanimation_04_2servos_1switch1constant)
+- [RTC_ServoAnimation_05_Simple_TimeCues](#rtc_servoanimation_05_simple_timecues)
+- [RTC_ServoAnimation_06_SpeedControl](#rtc_servoanimation_06_speedcontrol)
 
 ## ServoAnimation_00_1Servo_Sweep
 
@@ -120,3 +122,49 @@ These examples demonstrate how to combine the Real Time Clock (RTC) with the Ser
 - `minuteOffset`: Value added to the current minute
 - `playSpeed`: Controls animation speed
 - `lastMinute`: Stores the last minute value
+
+## RTC_ServoAnimation_05_Simple_TimeCues
+
+**Description**: A simplified version of TimeCues example without LED matrix, using direct variable references for easier understanding and modification.
+
+**Key Features**:
+- Five different animations with different playback modes (ONCE, LOOP, BOOMERANG)
+- Each animation is triggered at a specific "cue" minute (0-4)
+- Uses individual variables for cue times and animation names for clarity
+- Demonstrates a gradual progression of animation complexity and behaviors
+
+**Key Functions**:
+- `setup()`: Initializes the RTC, servo, and creates five animations
+- `loop()`: Checks current time and plays animations at specific minutes
+- `setupAnimations()`: Creates the 5 different animations for the servo
+
+**Key Variables**:
+- `cue0`, `cue1`, etc.: Individual minute values when animations should trigger
+- `animName0`, `animName1`, etc.: String variables for animation names
+- `myServo`: Servo object to be controlled
+- `notifier`: ServoNotifier that handles the animations
+- `animationSpeed`: Controls the playback speed of all animations
+- `currentAnimation`: Tracks which animation is currently playing
+
+## RTC_ServoAnimation_06_SpeedControl
+
+**Description**: Demonstrates how to modify animation speed in response to time-based triggers, using a single animation with varying playback rates.
+
+**Key Features**:
+- A single complex animation plays continuously throughout
+- Five different playback speeds change at specific minute intervals
+- Shows how to create varied motion without multiple animations
+- Uses the global speed control feature of the ServoNotifier
+
+**Key Functions**:
+- `setup()`: Initializes the RTC, servo, and creates a single complex animation
+- `loop()`: Checks current time and adjusts animation speed at specific minutes
+- `setupAnimation()`: Creates a single animation with multiple keyframes
+
+**Key Variables**:
+- `cue0`, `cue1`, etc.: Individual minute values when speed changes should occur
+- `speedSettings[]`: Array of speed multipliers for each cue point
+- `currentSpeed`: Tracks the current playback speed
+- `myServo`: Servo object to be controlled
+- `notifier`: ServoNotifier that handles the animation
+- `animName`: String variable for the animation name
