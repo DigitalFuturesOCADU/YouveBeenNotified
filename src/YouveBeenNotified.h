@@ -164,6 +164,16 @@ public:
     // Timing methods
     unsigned long timeToNextKey() const;
     unsigned long timeRemaining() const;
+    
+    // Missing functions from documentation
+    PlayMode getPlaybackMode() const;
+    unsigned long getElapsedTime() const;
+    unsigned long getTotalDuration() const;
+    float getStartValue() const;
+    float getEndValue() const;
+    bool hasAnimation(const String& name) const;
+    int getAnimationCount() const;
+    std::vector<String> getAnimationNames() const;
 };
 
 // ----------------------------------------------------------------

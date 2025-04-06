@@ -585,6 +585,70 @@ unsigned long ServoNotifier::timeRemaining() const {
     return animationDuration - effectiveTime;
 }
 
+// Implementation of missing functions
+
+PlayMode ServoNotifier::getPlaybackMode() const {
+    return currentMode;
+}
+
+unsigned long ServoNotifier::getElapsedTime() const {
+    if (currentState != PLAYING) {
+        return 0;
+    }
+    
+    // Calculate elapsed time accounting for pauses
+    return millis() - startTime - totalPausedTime;
+}
+
+unsigned long ServoNotifier::getTotalDuration() const {
+    if (currentAnimation == nullptr || currentAnimation->getKeyframeCount() < 1) {
+        return 0;
+    }
+    
+    // Get the time of the last keyframe
+    return currentAnimation->getKeyFrameTime(currentAnimation->getKeyframeCount() - 1);
+}
+
+float ServoNotifier::getStartValue() const {
+    if (currentAnimation == nullptr || currentAnimation->getKeyframeCount() < 1) {
+        return 0.0f;
+    }
+    
+    // Return the value of the first keyframe
+    return currentAnimation->getKeyFrameValue(0);
+}
+
+float ServoNotifier::getEndValue() const {
+    if (currentAnimation == nullptr || currentAnimation->getKeyframeCount() < 1) {
+        return 0.0f;
+    }
+    
+    // Return the value of the last keyframe
+    return currentAnimation->getKeyFrameValue(currentAnimation->getKeyframeCount() - 1);
+}
+
+bool ServoNotifier::hasAnimation(const String& name) const {
+    // Check if animation with given name exists in the collection
+    for (const auto& anim : animations) {
+        if (anim.getName() == name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int ServoNotifier::getAnimationCount() const {
+    return animations.size();
+}
+
+std::vector<String> ServoNotifier::getAnimationNames() const {
+    std::vector<String> names;
+    for (const auto& anim : animations) {
+        names.push_back(anim.getName());
+    }
+    return names;
+}
+
 //======================================================================
 // LEDNotifier Implementation
 //======================================================================

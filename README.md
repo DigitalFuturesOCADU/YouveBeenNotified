@@ -43,6 +43,7 @@ A library for creating time-based animations for Arduino R4 WiFi...for one hour.
         - [Multiple Animations](#multiple-animations)
         - [Animation Speed Control](#animation-speed-control)
         - [Crossfading](#crossfading)
+    - [Animation Playback Controls](#animation-playback-controls)
 - [Example Projects](#example-projects)
 
 ## Introduction
@@ -610,6 +611,198 @@ notifier.crossfadeTo("pulse", 500, LOOP);
 // You can also specify the playback mode for the target animation
 notifier.crossfadeTo("wave", 1000, BOOMERANG);
 ```
+
+### Animation Playback Controls
+
+The library provides several methods to control animation playback:
+
+#### Play Animation
+Starts an animation with the specified playback mode:
+
+```cpp
+// Play by animation name
+notifier.playAnimation("wave", LOOP); // Name and playback mode
+
+// Play by animation reference
+notifier.playAnimation(waveMotion, ONCE);
+```
+
+#### Pause and Resume
+Temporarily pause an animation while preserving its current position:
+
+```cpp
+// Pause the current animation
+notifier.pause();
+
+// Resume a paused animation
+notifier.resume();
+```
+
+When paused, the animation will:
+- Maintain its current position
+- Keep track of how long it's been paused
+- Continue from exact same position when resumed
+- Adjust timing to account for the pause duration
+
+#### Stop Animation
+Completely stops the current animation:
+
+```cpp
+// Stop any currently playing animation
+notifier.stop();
+```
+
+When stopped, the animation will:
+- Reset to the IDLE state
+- Clear all animation references
+- Need to be started again with playAnimation()
+- Not maintain its position or timing information
+
+#### Simple Implementation Example
+
+Here's a complete example showing how to implement and use play, pause, and stop controls with button inputs:
+
+```cpp
+#include <Servo.h>
+#include "YouveBeenNotified.h"
+
+// Create servo and notifier
+Servo myServo;
+ServoNotifier notifier(myServo);
+
+// Pin assignments
+const int servoPin = 9;
+const int playButtonPin = 2;
+const int pauseButtonPin = 3;
+const int stopButtonPin = 4;
+
+// Button state tracking
+bool playButtonState = false;
+bool pauseButtonState = false;
+bool stopButtonState = false;
+bool lastPlayButtonState = false;
+bool lastPauseButtonState = false;
+bool lastStopButtonState = false;
+
+void setup() {
+  // Set up Serial for debugging
+  Serial.begin(9600);
+  
+  // Initialize button pins
+  pinMode(playButtonPin, INPUT_PULLUP);
+  pinMode(pauseButtonPin, INPUT_PULLUP);
+  pinMode(stopButtonPin, INPUT_PULLUP);
+  
+  // Attach servo to pin
+  myServo.attach(servoPin);
+  
+  // Set up a wave animation
+  KeyframeAnimation wave("wave");
+  wave.addKeyFrame(0, 0);       // Start at 0 degrees
+  wave.addKeyFrame(90, 1000);   // Move to 90 degrees over 1 second
+  wave.addKeyFrame(45, 2000);   // Move to 45 degrees over 1 second
+  wave.addKeyFrame(120, 3000);  // Move to 120 degrees over 1 second
+  wave.addKeyFrame(0, 4000);    // Return to 0 degrees over 1 second
+  
+  // Add animation to notifier
+  notifier.addAnimation(wave);
+  
+  Serial.println("Animation setup complete");
+  Serial.println("Press buttons to control: Play, Pause, or Stop");
+}
+
+void loop() {
+  // Update animation calculations
+  notifier.update();
+  
+  // If the servo value has changed, update the servo position
+  if (notifier.hasChanged()) {
+    myServo.write(notifier.getValue());
+  }
+  
+  // Read button states (inverted because of INPUT_PULLUP)
+  playButtonState = !digitalRead(playButtonPin);
+  pauseButtonState = !digitalRead(pauseButtonPin);
+  stopButtonState = !digitalRead(stopButtonPin);
+  
+  // Check for Play button press
+  if (playButtonState && !lastPlayButtonState) {
+    // Start animation in LOOP mode
+    notifier.playAnimation("wave", LOOP);
+    Serial.println("Animation started");
+  }
+  
+  // Check for Pause/Resume button press
+  if (pauseButtonState && !lastPauseButtonState) {
+    if (notifier.isPaused()) {
+      // Resume if currently paused
+      notifier.resume();
+      Serial.println("Animation resumed");
+    } else if (notifier.isPlaying()) {
+      // Pause if currently playing
+      notifier.pause();
+      Serial.println("Animation paused");
+    }
+  }
+  
+  // Check for Stop button press
+  if (stopButtonState && !lastStopButtonState) {
+    // Stop the animation
+    notifier.stop();
+    Serial.println("Animation stopped");
+  }
+  
+  // Update button state history
+  lastPlayButtonState = playButtonState;
+  lastPauseButtonState = pauseButtonState;
+  lastStopButtonState = stopButtonState;
+  
+  // Print animation status when it changes
+  static AnimationState lastState = IDLE;
+  if (notifier.getState() != lastState) {
+    lastState = notifier.getState();
+    
+    Serial.print("Animation state: ");
+    switch (lastState) {
+      case IDLE:
+        Serial.println("IDLE");
+        break;
+      case PLAYING:
+        Serial.println("PLAYING");
+        break;
+      case PAUSED:
+        Serial.println("PAUSED");
+        break;
+      case COMPLETED:
+        Serial.println("COMPLETED");
+        break;
+    }
+  }
+  
+  // Small delay to prevent switch bouncing
+  delay(20);
+}
+```
+
+### Animation State Transitions
+
+The animation system uses the following state machine for managing animations:
+
+- **IDLE** → No animation playing (initial state)
+- **PLAYING** → Animation is actively running
+- **PAUSED** → Animation is temporarily frozen
+- **COMPLETED** → Animation (ONCE mode only) has finished
+
+Possible state transitions:
+- IDLE → PLAYING: Call `playAnimation()`
+- PLAYING → PAUSED: Call `pause()`
+- PAUSED → PLAYING: Call `resume()`
+- PLAYING → COMPLETED: Automatic when a ONCE animation finishes
+- PLAYING → IDLE: Call `stop()`
+- PAUSED → IDLE: Call `stop()`
+- COMPLETED → IDLE: Call `stop()` or `playAnimation()`
+
+You can check the current state with methods like `isPlaying()`, `isPaused()`, `isCompleted()`, or the more general `getState()` method.
 
 ## Example Projects
 
