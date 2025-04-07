@@ -15,12 +15,6 @@ A library for creating time-based animations for Arduino R4 WiFi...for one hour.
     - [Essential RTC Methods](#essential-rtc-methods)
         - [Basic Setup](#basic-setup)
         - [Getting Current Time](#getting-current-time)
-- [Using the LED Matrix Display](#using-the-led-matrix-display)
-    - [Basic Setup](#basic-setup-1)
-    - [Display Patterns](#display-patterns)
-        - [Showing Numbers](#showing-numbers)
-        - [Progress Indicator](#progress-indicator)
-    - [Best Practices](#best-practices)
 - [Servo Motors](#servo-motors)
     - [Servo Basics](#servo-basics)
         - [Types of Servos](#types-of-servos)
@@ -45,6 +39,12 @@ A library for creating time-based animations for Arduino R4 WiFi...for one hour.
         - [Crossfading](#crossfading)
     - [Animation Playback Controls](#animation-playback-controls)
 - [Example Projects](#example-projects)
+- [Using the LED Matrix Display](#using-the-led-matrix-display)
+    - [Basic Setup](#basic-setup-1)
+    - [Display Patterns](#display-patterns)
+        - [Showing Numbers](#showing-numbers)
+        - [Progress Indicator](#progress-indicator)
+    - [Best Practices](#best-practices)
 
 ## Introduction
 
@@ -120,87 +120,6 @@ void loop() {
   // Display or use the time...
 }
 ```
-
-## Using the LED Matrix Display
-
-The Arduino R4 WiFi's 12x8 LED matrix is useful for displaying information and debug data. For detailed documentation on the ArduinoGraphics library for the LED matrix, see the [Arduino Graphics Guide](ArduinoGraphics_R4.md).
-
-### Basic Setup
-
-```cpp
-#include "ArduinoGraphics.h" //must be defined before Arduino_LED_Matrix.h
-#include "Arduino_LED_Matrix.h"
-
-ArduinoLEDMatrix matrix;
-
-void setup() {
-  if (!matrix.begin()) {
-    Serial.println("Matrix initialization failed!");
-    while (1);
-  }
-}
-```
-
-### Display Patterns
-
-Here are some common display patterns you can use:
-
-#### Showing Numbers
-
-```cpp
-void displayNumber(int value) {
-  matrix.beginDraw();
-  matrix.clear();
-  
-  // Configure text properties
-  matrix.stroke(0xFFFFFFFF);
-  matrix.textFont(Font_5x7);
-  
-  // Center the number
-  String numStr = String(value);
-  int xPos = (matrix.width() - (numStr.length() * 5)) / 2;
-  matrix.text(numStr, xPos, 1);
-  
-  matrix.endDraw();
-}
-```
-
-#### Progress Indicator
-
-```cpp
-void showProgress(int percentage) {
-  matrix.beginDraw();
-  matrix.clear();
-  
-  // Map percentage to matrix width
-  int fillWidth = map(percentage, 0, 100, 0, matrix.width());
-  
-  // Draw progress bar
-  for(int x = 0; x < fillWidth; x++) {
-    matrix.point(x, 3);
-    matrix.point(x, 4);
-  }
-  
-  matrix.endDraw();
-}
-```
-
-### Best Practices
-
-1. **Drawing Operations**
-   - Always wrap drawing code between `beginDraw()` and `endDraw()`
-   - Clear the display with `clear()` before drawing new content
-   - Use `stroke()` to set the LED state (0xFFFFFFFF for on)
-
-2. **Text Display**
-   - Use `Font_5x7` for numbers and large text
-   - Use `Font_4x6` for scrolling messages
-   - Center text by calculating position based on string length
-
-3. **Animation**
-   - Use `millis()` for timing instead of `delay()`
-   - Keep scrolling messages brief
-   - Update display only when content changes
 
 ## Servo Motors
 
@@ -828,3 +747,84 @@ For detailed instructions and code walkthroughs:
 - [02 RTC Simple Servo](./02_RTC_Simple_Servo.md)
 - [03 RTC Servo Animations](./03_RTC_Servo_Animations.md)
 - [04 YBN Animation Basics](./04_YBN_Animation_Basics.md)
+
+## Using the LED Matrix Display
+
+The Arduino R4 WiFi's 12x8 LED matrix is useful for displaying information and debug data. For detailed documentation on the ArduinoGraphics library for the LED matrix, see the [Arduino Graphics Guide](ArduinoGraphics_R4.md).
+
+### Basic Setup
+
+```cpp
+#include "ArduinoGraphics.h" //must be defined before Arduino_LED_Matrix.h
+#include "Arduino_LED_Matrix.h"
+
+ArduinoLEDMatrix matrix;
+
+void setup() {
+  if (!matrix.begin()) {
+    Serial.println("Matrix initialization failed!");
+    while (1);
+  }
+}
+```
+
+### Display Patterns
+
+Here are some common display patterns you can use:
+
+#### Showing Numbers
+
+```cpp
+void displayNumber(int value) {
+  matrix.beginDraw();
+  matrix.clear();
+  
+  // Configure text properties
+  matrix.stroke(0xFFFFFFFF);
+  matrix.textFont(Font_5x7);
+  
+  // Center the number
+  String numStr = String(value);
+  int xPos = (matrix.width() - (numStr.length() * 5)) / 2;
+  matrix.text(numStr, xPos, 1);
+  
+  matrix.endDraw();
+}
+```
+
+#### Progress Indicator
+
+```cpp
+void showProgress(int percentage) {
+  matrix.beginDraw();
+  matrix.clear();
+  
+  // Map percentage to matrix width
+  int fillWidth = map(percentage, 0, 100, 0, matrix.width());
+  
+  // Draw progress bar
+  for(int x = 0; x < fillWidth; x++) {
+    matrix.point(x, 3);
+    matrix.point(x, 4);
+  }
+  
+  matrix.endDraw();
+}
+```
+
+### Best Practices
+
+1. **Drawing Operations**
+   - Always wrap drawing code between `beginDraw()` and `endDraw()`
+   - Clear the display with `clear()` before drawing new content
+   - Use `stroke()` to set the LED state (0xFFFFFFFF for on)
+
+2. **Text Display**
+   - Use `Font_5x7` for numbers and large text
+   - Use `Font_4x6` for scrolling messages
+   - Center text by calculating position based on string length
+
+3. **Animation**
+   - Use `millis()` for timing instead of `delay()`
+   - Keep scrolling messages brief
+   - Update display only when content changes
